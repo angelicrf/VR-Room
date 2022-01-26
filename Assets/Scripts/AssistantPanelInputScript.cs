@@ -28,8 +28,9 @@ public class AssistantPanelInputScript : MonoBehaviour
         {
             xrDeviceSimulatorControls.Assistant.Disable();
         }
-        else
+        else if(xrDefaultInputAction != null)
         {
+          
             xrDefaultInputAction.Assistant.Disable();
         }
     }
@@ -39,7 +40,8 @@ public class AssistantPanelInputScript : MonoBehaviour
         {
             xrDeviceSimulatorControls.Assistant.Enable();
         }
-        else{
+        else if (xrDefaultInputAction != null)
+        {
             xrDefaultInputAction.Assistant.Enable();
         }
     }
