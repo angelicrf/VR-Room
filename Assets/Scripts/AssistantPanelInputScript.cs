@@ -17,10 +17,10 @@ public class AssistantPanelInputScript : MonoBehaviour
         {
             xrDeviceSimulatorControls = new XRDeviceSimulatorControls();
         }
-        else
-        {
-            xrDefaultInputAction = new XRIDefaultInputActions();
-        }
+        //else
+        //{
+        //    xrDefaultInputAction = new XRIDefaultInputActions();
+        //}
     }
     private void OnDestroy()
     {
@@ -28,11 +28,11 @@ public class AssistantPanelInputScript : MonoBehaviour
         {
             xrDeviceSimulatorControls.Assistant.Disable();
         }
-        else if(xrDefaultInputAction != null)
-        {
+        //else if(xrDefaultInputAction != null)
+        //{
           
-            xrDefaultInputAction.Assistant.Disable();
-        }
+        //    xrDefaultInputAction.Assistant.Disable();
+        //}
     }
     private void OnEnable()
     {
@@ -40,10 +40,10 @@ public class AssistantPanelInputScript : MonoBehaviour
         {
             xrDeviceSimulatorControls.Assistant.Enable();
         }
-        else if (xrDefaultInputAction != null)
-        {
-            xrDefaultInputAction.Assistant.Enable();
-        }
+        //else if (xrDefaultInputAction != null)
+        //{
+        //    xrDefaultInputAction.Assistant.Enable();
+        //}
     }
 
     public void GetLeftBtnValue()
