@@ -30,10 +30,13 @@ public class SetInteractionLayer : MonoBehaviour
 
     public void ToggleTargetLayer(bool value)
     {
+        Debug.Log( "value is " + value );
+
         if (value)
         {
             SetTargetLayer();
         }
+        
         else
         {
             SetOriginalLayer();
