@@ -12,6 +12,7 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     private XRDeviceSimulatorControls xrdeviceSimulatorControl;
     private LineRenderer m_LineRenderer;
     [SerializeField] private GameObject thisObj;
+    private GameObject blockBox;
     
     private XRInteractorLineVisual m_ValidColorGradient;
     private void Awake()
@@ -19,12 +20,14 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
         xrdeviceSimulatorControl = new XRDeviceSimulatorControls();
         m_LineRenderer = thisObj.GetComponent<LineRenderer>();
         m_ValidColorGradient = thisObj.GetComponent<XRInteractorLineVisual>();
+        blockBox = GameObject.Find( "/AllBuildingBlocks/BlockBox" );
     }
     void FixedUpdate()
     {
-
+        
         m_ValidColorGradient.validColorGradient.SetKeys( new[] { new GradientColorKey( Color.magenta , 0f ) , new GradientColorKey( Color.magenta , 1f ) } , new[] { new GradientAlphaKey( 1f , 0f ) , new GradientAlphaKey( 1f , 1f ) } );
         m_LineRenderer.colorGradient = m_ValidColorGradient.validColorGradient;
+        ChangeAnime();
     }
     void DrawLineThreeD(LineRenderer m_LineRenderer)
     {
@@ -65,7 +68,7 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
         Debug.Log( "changeAnimCalled" );
 
         float valueController = xrdeviceSimulatorControl.InputControls.Grip.ReadValue<float>();
-        Debug.Log( "valueController " + valueController );
+        //Debug.Log( "valueController " + valueController );
         if (zoombieMan.gameObject.CompareTag( "ZoobmieMan" ))
             if (valueController != 0)
             {
@@ -74,27 +77,24 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
             else
             {
                Vector2 newCamPos = camPos.transform.position;
+               Vector2 blockBoxPos = blockBox.transform.position;
                Vector2 zoombiePos = zoombieMan.transform.position;
-               Vector2 diffPos = newCamPos - zoombiePos;
-               //if (diffPos.y < 2f || diffPos.x < 2f)
-               // {
-               //     Debug.Log( "distance is zero" );
-               //     zoombieAnim.SetBool( "isFall" , true );
-               // }
-                StartCoroutine( SetAnimBackCo() );
-                //TestChangeAnim();
+               Vector2 diffPos = blockBoxPos - zoombiePos;
+                    //newCamPos - zoombiePos;
+               if (diffPos.y < 2f || diffPos.x < 2f)
+                {
+                    StartCoroutine( SetAnimBackCo() );
+                }
             }
     }
     IEnumerator SetAnimCo()
     {
         Debug.Log( "rayCast zoombie" );
-
         yield return new WaitForSeconds( 0.2f );
         zoombieAnim.SetBool( "isFall" , true );
     }
     IEnumerator SetAnimBackCo()
     {
-        Debug.Log( "trigerred" );
         zoombieAnim.SetBool( "isFall" , true );
         yield return new WaitForSeconds( 0.5f );
     }
