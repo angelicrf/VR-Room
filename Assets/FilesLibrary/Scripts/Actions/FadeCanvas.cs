@@ -64,7 +64,7 @@ public class FadeCanvas : MonoBehaviour
 
         while (alpha >= 0.0f)
         {
-            SetAlpha(1 - (elapsedTime / duration));
+            SetAlpha( 1 - ( elapsedTime / duration ) );
             elapsedTime += Time.deltaTime;
             yield return null;
         }

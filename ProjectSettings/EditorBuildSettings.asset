@@ -8,6 +8,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/VrRoomScene.unity
     guid: afdcb113ffd5a4353ad88f0dd03743af
+  - enabled: 1
+    path: Assets/Scenes/ScapeScene.unity
+    guid: 56b4fbfe810cb8940b6746275411c880
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 8fccb80e6c9a84389a75f2c1ed4d786d, type: 2}
     com.unity.input.settings: {fileID: 11400000, guid: bcc833719e45a584fbf16bbdd8fb90b5, type: 2}
