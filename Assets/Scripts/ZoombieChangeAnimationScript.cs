@@ -13,6 +13,7 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     private LineRenderer m_LineRenderer;
     [SerializeField] private GameObject thisObj;
     private GameObject blockBox;
+    private GameObject zombieFight;
     
     private XRInteractorLineVisual m_ValidColorGradient;
     private void Awake()
@@ -21,13 +22,14 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
         m_LineRenderer = thisObj.GetComponent<LineRenderer>();
         m_ValidColorGradient = thisObj.GetComponent<XRInteractorLineVisual>();
         blockBox = GameObject.Find( "/AllBuildingBlocks/BlockBox" );
+        zombieFight = GameObject.Find( "/AllZombies/ZombieFit" );
     }
     void FixedUpdate()
     {
         
         m_ValidColorGradient.validColorGradient.SetKeys( new[] { new GradientColorKey( Color.magenta , 0f ) , new GradientColorKey( Color.magenta , 1f ) } , new[] { new GradientAlphaKey( 1f , 0f ) , new GradientAlphaKey( 1f , 1f ) } );
         m_LineRenderer.colorGradient = m_ValidColorGradient.validColorGradient;
-        ChangeAnime();
+        //ChangeAnime();
     }
     void DrawLineThreeD(LineRenderer m_LineRenderer)
     {
@@ -54,7 +56,6 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
         Vector3 direction = new Vector3(4,0,5);
         Debug.DrawRay( zoombieMan.transform.position , direction * 1f , Color.yellow );
         Ray newRay = new Ray( zoombieMan.transform.position , direction );
-        //Debug.Log( "newRay " + newRay);
         bool result = Physics.Raycast( newRay , out RaycastHit rayhit , 1f );
         Debug.Log( "result " + result );
 
@@ -68,7 +69,7 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
         Debug.Log( "changeAnimCalled" );
 
         float valueController = xrdeviceSimulatorControl.InputControls.Grip.ReadValue<float>();
-        //Debug.Log( "valueController " + valueController );
+
         if (zoombieMan.gameObject.CompareTag( "ZoobmieMan" ))
             if (valueController != 0)
             {
@@ -76,15 +77,7 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
             }
             else
             {
-               Vector2 newCamPos = camPos.transform.position;
-               Vector2 blockBoxPos = blockBox.transform.position;
-               Vector2 zoombiePos = zoombieMan.transform.position;
-               Vector2 diffPos = blockBoxPos - zoombiePos;
-                    //newCamPos - zoombiePos;
-               if (diffPos.y < 2f || diffPos.x < 2f)
-                {
-                    StartCoroutine( SetAnimBackCo() );
-                }
+                StartCoroutine( SetAnimFightCo() );
             }
     }
     IEnumerator SetAnimCo()
@@ -96,12 +89,49 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     IEnumerator SetAnimBackCo()
     {
         zoombieAnim.SetBool( "isFall" , true );
-        yield return new WaitForSeconds( 0.5f );
+        bool getAnimTime = zoombieAnim.GetCurrentAnimatorStateInfo( 0 ).normalizedTime < 1;
+        yield return new WaitUntil( () => getAnimTime );
+        zoombieAnim.SetBool( "isFall" , false );
+    }
+    IEnumerator SetAnimFightCo()
+    {
+        yield return new WaitForSeconds( 3f );
+        zoombieAnim.SetBool( "isFight" , true );
+        if (!zombieFight)
+        {
+            yield return new WaitForSeconds( 0.6f );
+            zoombieAnim.SetBool( "isFight" , false );
+            yield return new WaitForSeconds( 0.6f );
+            zoombieAnim.SetBool( "isFallBack" , true );
+        }
+
+        yield return new WaitForSeconds( 0.6f );
+        zoombieAnim.SetBool( "isFallAfterFight" , true );
+        bool getAnimTime = zoombieAnim.GetCurrentAnimatorStateInfo( 0 ).normalizedTime < 1;
+        yield return new WaitUntil( () => getAnimTime );
+        zoombieAnim.SetBool( "isFallAfterFight" , false );
+        zoombieAnim.SetBool( "isFight" , false );
+    }
+    private void CheckPosByDistance()
+    {
+        Vector2 newCamPos = camPos.transform.position;
+        Vector2 blockBoxPos = blockBox.transform.position;
+        Vector2 zombieFitPos = zombieFight.transform.position;
+        Vector2 zoombiePos = zoombieMan.transform.position;
+        Vector2 diffZBPos = blockBoxPos - zoombiePos;
+        Vector2 diffZFPos = zombieFitPos - zoombiePos;
+
+        if (Mathf.Abs( diffZBPos.y) < 2f  || Mathf.Abs(diffZBPos.x) < 2f )
+        {
+            StartCoroutine( SetAnimBackCo() );
+        }
+        if (Mathf.Abs( diffZFPos.x ) < 3.00f)
+        {
+            StartCoroutine( SetAnimFightCo() );
+        }
     }
     public void TestChangeAnim()
     {
         Debug.Log( "zoombie selected" );
-
-        // zoombieAnim.SetBool( "isFall" , true );
     }
 }
