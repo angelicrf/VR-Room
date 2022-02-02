@@ -14,7 +14,9 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     [SerializeField] private GameObject thisObj;
     private GameObject blockBox;
     private GameObject zombieFight;
-    
+    private bool animIsFight = false;
+    private bool animIsRunDie = false;
+    //public AnimationEvent OnAnimationComplete;
     private XRInteractorLineVisual m_ValidColorGradient;
     private void Awake()
     {
@@ -29,14 +31,23 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
         
         m_ValidColorGradient.validColorGradient.SetKeys( new[] { new GradientColorKey( Color.magenta , 0f ) , new GradientColorKey( Color.magenta , 1f ) } , new[] { new GradientAlphaKey( 1f , 0f ) , new GradientAlphaKey( 1f , 1f ) } );
         m_LineRenderer.colorGradient = m_ValidColorGradient.validColorGradient;
-        //ChangeAnime();
+        if (animIsFight)
+        {
+            CallAnimFight();
+            animIsFight = false;
+        }
+        if (animIsRunDie)
+        {
+            CallAnimBack();
+            animIsRunDie = false;
+        }
     }
-    void DrawLineThreeD(LineRenderer m_LineRenderer)
+    private void DrawLineThreeD(LineRenderer m_LineRenderer)
     {
         var rf = m_LineRenderer.colorGradient;
         Debug.Log( "rf" + rf );
     }
-    void OnDrawGizmosSelected()
+    private void OnDrawGizmosSelected()
     {
         // Draws a 5 unit long yellow line in front of the object
         Gizmos.color = Color.yellow;
@@ -51,7 +62,7 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     {
         xrdeviceSimulatorControl.Disable();
     }
-    public void CreateNewRay()
+    private void CreateNewRay()
     {
         Vector3 direction = new Vector3(4,0,5);
         Debug.DrawRay( zoombieMan.transform.position , direction * 1f , Color.yellow );
@@ -64,7 +75,7 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
             Debug.Log( "Fired and hit a wall" );
         }
     }
-    public void ChangeAnime()
+    private void ChangeAnime()
     {
         Debug.Log( "changeAnimCalled" );
 
@@ -80,6 +91,22 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
                 StartCoroutine( SetAnimFightCo() );
             }
     }
+    private bool ChangeFight()
+    {
+        return animIsFight = true;
+    }
+    private bool ChangeRunDie()
+    {
+        return animIsRunDie = true;
+    }
+    public void CallTrigerFight()
+    {
+        ChangeFight();
+    }
+    public void CallTrigerRunDie()
+    {
+        ChangeRunDie();
+    }
     IEnumerator SetAnimCo()
     {
         Debug.Log( "rayCast zoombie" );
@@ -89,9 +116,34 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     IEnumerator SetAnimBackCo()
     {
         zoombieAnim.SetBool( "isFall" , true );
-        bool getAnimTime = zoombieAnim.GetCurrentAnimatorStateInfo( 0 ).normalizedTime < 1;
-        yield return new WaitUntil( () => getAnimTime );
+        Debug.Log( "name " + zoombieAnim.runtimeAnimatorController.animationClips[1].name );
+
+        AnimationClip clip = zoombieAnim.runtimeAnimatorController.animationClips[1];
+        AnimationEvent animationEndEvent = new AnimationEvent();
+        animationEndEvent.time = clip.length;
+        animationEndEvent.functionName = "AnimationCompleteHandler";
+        animationEndEvent.stringParameter = clip.name;
+
+        clip.AddEvent( animationEndEvent );
+        yield return new WaitForSeconds(2.00f);
+        //bool getAnimTime = zoombieAnim.GetCurrentAnimatorStateInfo( 0 ).normalizedTime < 1;
+        //Debug.Log( "callBackAnim" + zoombieAnim.GetCurrentAnimatorClipInfo(0)[0].clip.name );
+        //Debug.Log( "callBackAnimTime " + zoombieAnim.GetCurrentAnimatorStateInfo(0).normalizedTime );
+        //yield return new WaitUntil( () => getAnimTime );
+        //zoombieAnim.SetBool( "isFall" , false );
+    }
+    public void AnimationCompleteHandler(string name)
+    {
+        Debug.Log( $"{name} animation complete." );
         zoombieAnim.SetBool( "isFall" , false );
+    }
+    private void CallAnimBack()
+    {
+        StartCoroutine( SetAnimBackCo() );
+    }
+    private void CallAnimFight()
+    {
+        StartCoroutine( SetAnimFightCo() );
     }
     IEnumerator SetAnimFightCo()
     {
