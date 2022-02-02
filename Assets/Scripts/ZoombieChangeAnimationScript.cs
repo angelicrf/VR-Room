@@ -15,8 +15,6 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     private LineRenderer m_LineRenderer;
     private GameObject blockBox;
     private GameObject zombieFight;
-    private bool animIsFight = false;
-    private bool animIsRunDie = false;
 
     private XRInteractorLineVisual m_ValidColorGradient;
     private void Awake()
@@ -28,20 +26,9 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
         zombieFight = GameObject.Find( "/AllZombies/ZombieFit" );
     }
     void FixedUpdate()
-    {
-        
+    {       
         m_ValidColorGradient.validColorGradient.SetKeys( new[] { new GradientColorKey( Color.magenta , 0f ) , new GradientColorKey( Color.magenta , 1f ) } , new[] { new GradientAlphaKey( 1f , 0f ) , new GradientAlphaKey( 1f , 1f ) } );
         m_LineRenderer.colorGradient = m_ValidColorGradient.validColorGradient;
-        if (animIsFight)
-        {
-            CallAnimFight();
-            animIsFight = false;
-        }
-        if (animIsRunDie)
-        {
-            CallAnimBack();
-            animIsRunDie = false;
-        }
     }
     private void DrawLineThreeD(LineRenderer m_LineRenderer)
     {
@@ -91,22 +78,6 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
             {
                 StartCoroutine( SetAnimFightCo() );
             }
-    }
-    private bool ChangeFight()
-    {
-        return animIsFight = true;
-    }
-    private bool ChangeRunDie()
-    {
-        return animIsRunDie = true;
-    }
-    public void CallTrigerFight()
-    {
-        ChangeFight();
-    }
-    public void CallTrigerRunDie()
-    {
-        ChangeRunDie();
     }
     IEnumerator SetAnimCo()
     {
@@ -161,13 +132,6 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     IEnumerator SetAnimFightCo()
     {
         zoombieAnim.SetBool( "isFight" , true );
-        if (!zombieFight)
-        {
-            yield return new WaitForSeconds( 0.6f );
-            zoombieAnim.SetBool( "isFight" , false );
-            yield return new WaitForSeconds( 0.6f );
-            zoombieAnim.SetBool( "isFallBack" , true );
-        }
         yield return new WaitForSeconds( 0.6f );
         zoombieAnim.SetBool( "isFallAfterFight" , true );
         yield return new WaitForSeconds( 0.3f );
@@ -194,5 +158,21 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     public void TestChangeAnim()
     {
         Debug.Log( "zoombie selected" );
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log( "trigged from script" + other.name);
+        switch (other.name)
+        {
+            case "ZombieFit":
+               StartCoroutine( SetAnimFightCo() );
+                break;
+            case "BlockBox":
+                StartCoroutine( SetAnimBackCo() );
+                break;
+            default:
+                break;
+        }
+
     }
 }
