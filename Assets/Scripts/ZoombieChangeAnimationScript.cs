@@ -9,14 +9,15 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     [SerializeField] private GameObject zoombieMan;
     [SerializeField] private GameObject camPos;
     [SerializeField] private Animator zoombieAnim;
+    [SerializeField] private GameObject thisObj;
+
     private XRDeviceSimulatorControls xrdeviceSimulatorControl;
     private LineRenderer m_LineRenderer;
-    [SerializeField] private GameObject thisObj;
     private GameObject blockBox;
     private GameObject zombieFight;
     private bool animIsFight = false;
     private bool animIsRunDie = false;
-    //public AnimationEvent OnAnimationComplete;
+
     private XRInteractorLineVisual m_ValidColorGradient;
     private void Awake()
     {
@@ -116,26 +117,38 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     IEnumerator SetAnimBackCo()
     {
         zoombieAnim.SetBool( "isFall" , true );
-        Debug.Log( "name " + zoombieAnim.runtimeAnimatorController.animationClips[1].name );
-
-        AnimationClip clip = zoombieAnim.runtimeAnimatorController.animationClips[1];
-        AnimationEvent animationEndEvent = new AnimationEvent();
-        animationEndEvent.time = clip.length;
-        animationEndEvent.functionName = "AnimationCompleteHandler";
-        animationEndEvent.stringParameter = clip.name;
-
-        clip.AddEvent( animationEndEvent );
-        yield return new WaitForSeconds(2.00f);
-        //bool getAnimTime = zoombieAnim.GetCurrentAnimatorStateInfo( 0 ).normalizedTime < 1;
-        //Debug.Log( "callBackAnim" + zoombieAnim.GetCurrentAnimatorClipInfo(0)[0].clip.name );
-        //Debug.Log( "callBackAnimTime " + zoombieAnim.GetCurrentAnimatorStateInfo(0).normalizedTime );
-        //yield return new WaitUntil( () => getAnimTime );
-        //zoombieAnim.SetBool( "isFall" , false );
+        yield return new WaitForSeconds( 2.0f );
+        GetClipTime( "RunDieCompleteHandler" );
     }
-    public void AnimationCompleteHandler(string name)
+    IEnumerator GetCurrentAnimTime()
+    {
+        bool getAnimTime = zoombieAnim.GetCurrentAnimatorStateInfo( 0 ).normalizedTime < 1;
+        yield return new WaitUntil( () => getAnimTime );
+        zoombieAnim.SetBool( "isFall" , false );
+    }
+    private void GetClipTime(string eventFunc)
+    {
+        for (int i = 0; i < zoombieAnim.runtimeAnimatorController.animationClips.Length; i++)
+        {
+            AnimationClip clip = zoombieAnim.runtimeAnimatorController.animationClips[i];
+            AnimationEvent animationEndEvent = new AnimationEvent();
+            animationEndEvent.time = clip.length;
+            animationEndEvent.functionName = eventFunc;
+            animationEndEvent.stringParameter = clip.name;
+
+            clip.AddEvent( animationEndEvent );
+        }
+    }
+    private void RunDieCompleteHandler(string name)
     {
         Debug.Log( $"{name} animation complete." );
         zoombieAnim.SetBool( "isFall" , false );
+    }
+    private void FightCompleteHandler(string name)
+    {
+        Debug.Log( $"{name} animation complete." );
+        zoombieAnim.SetBool( "isFight" , false );
+        zoombieAnim.SetBool( "isFallAfterFight" , false );
     }
     private void CallAnimBack()
     {
@@ -147,7 +160,6 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     }
     IEnumerator SetAnimFightCo()
     {
-        yield return new WaitForSeconds( 3f );
         zoombieAnim.SetBool( "isFight" , true );
         if (!zombieFight)
         {
@@ -156,13 +168,10 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
             yield return new WaitForSeconds( 0.6f );
             zoombieAnim.SetBool( "isFallBack" , true );
         }
-
         yield return new WaitForSeconds( 0.6f );
         zoombieAnim.SetBool( "isFallAfterFight" , true );
-        bool getAnimTime = zoombieAnim.GetCurrentAnimatorStateInfo( 0 ).normalizedTime < 1;
-        yield return new WaitUntil( () => getAnimTime );
-        zoombieAnim.SetBool( "isFallAfterFight" , false );
-        zoombieAnim.SetBool( "isFight" , false );
+        yield return new WaitForSeconds( 0.3f );
+        GetClipTime( "FightCompleteHandler" );
     }
     private void CheckPosByDistance()
     {
