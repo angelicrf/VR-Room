@@ -13,6 +13,7 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
 
     private XRDeviceSimulatorControls xrdeviceSimulatorControl;
     private LineRenderer m_LineRenderer;
+    private ClipEndEventScript clipEndEventScript;
     private GameObject blockBox;
     private GameObject zombieFight;
 
@@ -21,6 +22,7 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     {
         xrdeviceSimulatorControl = new XRDeviceSimulatorControls();
         m_LineRenderer = thisObj.GetComponent<LineRenderer>();
+        clipEndEventScript = GetComponent<ClipEndEventScript>();
         m_ValidColorGradient = thisObj.GetComponent<XRInteractorLineVisual>();
         blockBox = GameObject.Find( "/AllBuildingBlocks/BlockBox" );
         zombieFight = GameObject.Find( "/AllZombies/ZombieFit" );
@@ -89,7 +91,7 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     {
         zoombieAnim.SetBool( "isFall" , true );
         yield return new WaitForSeconds( 2.0f );
-        GetClipTime( "RunDieCompleteHandler" );
+        clipEndEventScript.GetClipTime("RunDieCompleteHandler");
     }
     IEnumerator GetCurrentAnimTime()
     {
@@ -97,19 +99,7 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
         yield return new WaitUntil( () => getAnimTime );
         zoombieAnim.SetBool( "isFall" , false );
     }
-    private void GetClipTime(string eventFunc)
-    {
-        for (int i = 0; i < zoombieAnim.runtimeAnimatorController.animationClips.Length; i++)
-        {
-            AnimationClip clip = zoombieAnim.runtimeAnimatorController.animationClips[i];
-            AnimationEvent animationEndEvent = new AnimationEvent();
-            animationEndEvent.time = clip.length;
-            animationEndEvent.functionName = eventFunc;
-            animationEndEvent.stringParameter = clip.name;
 
-            clip.AddEvent( animationEndEvent );
-        }
-    }
     private void RunDieCompleteHandler(string name)
     {
         Debug.Log( $"{name} animation complete." );
@@ -135,7 +125,7 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
         yield return new WaitForSeconds( 0.6f );
         zoombieAnim.SetBool( "isFallAfterFight" , true );
         yield return new WaitForSeconds( 0.3f );
-        GetClipTime( "FightCompleteHandler" );
+        clipEndEventScript.GetClipTime("FightCompleteHandler");
     }
     private void CheckPosByDistance()
     {
