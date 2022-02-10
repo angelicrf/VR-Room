@@ -21,14 +21,16 @@ public class ManFighterScript : MonoBehaviour
         empty,
         stageOne,
         stageTwo,
-        final
+        final,
+        last
     }
     public enum TargetState
     {
         empty,
         stageOne,
         stageTwo,
-        final
+        final,
+        last
     }
 
     private void Start()
@@ -38,13 +40,13 @@ public class ManFighterScript : MonoBehaviour
         clipEndEventScript = GetComponent<ClipEndEventScript>();
         allFighters = new List<FighterScript>
        {
-           new FighterScript(100,"ManFighter2",0,"fr", FighterScript.FighterType.deffender),
-           new FighterScript(101,"ManCovered",0,"fr",FighterScript.FighterType.target),
+           new FighterScript(100,"ManFighter",0,"fr", FighterScript.FighterType.deffender),
+           new FighterScript(101,"ManTarget",0,"fr",FighterScript.FighterType.target),
            new FighterScript(102,"New",0,"null",FighterScript.FighterType.deffender)
        };
         SetFighterState( FighterState.empty );
         SetTargetState( TargetState.empty );
-        clipEndEventScript.UnLooping( manAnim, true );
+        //clipEndEventScript.UnLooping( manAnim, true );
     }
     private void FixedUpdate()
     {
@@ -95,13 +97,15 @@ public class ManFighterScript : MonoBehaviour
             //run audio G
             if (other.name != getFighterName.FighterName)
             {
-                SetFighterState( FighterState.stageOne );           
+                if (currentFighterState != FighterState.stageTwo && currentFighterState != FighterState.stageOne && currentFighterState != FighterState.final)
+                {
+
+                    SetFighterState( FighterState.stageOne );
+                }
             }
             else
             {
-                SetTargetState( TargetState.stageOne );
-               // addPointsFighter.LoosePoint();
-               // getFighterName.FighterScore = addPointsFighter.countPoints;                
+                SetTargetState( TargetState.stageOne );              
             }
         }
     }
@@ -122,10 +126,20 @@ public class ManFighterScript : MonoBehaviour
                 }
                 break;
             case FighterState.stageTwo:
-                StartCoroutine( ChangeFightAnim() );
+                StartCoroutine( ChangeFighterAnim() );
                 break;
             case FighterState.final:
                 signal.hasSignal = false;
+                if (!signal.hasSignal && clipEndEventScript.isFighterChanged)
+                {
+                    Debug.Log( "calledisFighterChanged" );
+
+                    clipEndEventScript.UnLoopFighter( manAnim );
+                    //SetFighterState( FighterState.last );
+                }
+                break;
+            case FighterState.last:
+                TestFunc();
                 break;
             default:
                 break;
@@ -154,10 +168,19 @@ public class ManFighterScript : MonoBehaviour
                 }
                 break;
             case TargetState.stageTwo:
-                TestFunc();
+                StartCoroutine( ChangeTargetAnim() );
                 break;
             case TargetState.final:
                 signal.hasSignal = false;
+                if (!signal.hasSignal && clipEndEventScript.isTargetChanged)
+                {
+                    Debug.Log( "calledisTargetChanged" );
+                    clipEndEventScript.UnLoopTarget( manAnim );
+                    //SetTargetState( TargetState.last );
+                }
+                break;
+            case TargetState.last:
+                TestFunc();
                 break;
             default:
                 break;
@@ -172,22 +195,28 @@ public class ManFighterScript : MonoBehaviour
         currentTargetState = newTiState;
         return currentTargetState;
     }
+
     private IEnumerator ChangeTargetAnim()
-    {
-        yield return new WaitForSeconds( 2.0f );
-    }
-    private IEnumerator ChangeFightAnim()
     {
         if (manAnim)
         {
+            manAnim.SetBool( "isCover" , true );
             yield return new WaitForSeconds( 2.0f );
-            //change anim state
-            manAnim.SetBool( "isBack" , true );
-            yield return new WaitForSeconds( 2.0f );
-            clipEndEventScript.GetClipTime( "CompleteDefenderEvent" );         
+            clipEndEventScript.GetClipTime( "CompleteTargetEvent" );
         }
       yield return null;
         
+    }
+    private IEnumerator ChangeFighterAnim()
+    {
+        if (manAnim)
+        {
+            manAnim.SetBool( "isBack" , true );
+            yield return new WaitForSeconds( 2.0f );
+            clipEndEventScript.GetClipTime( "CompleteFighterEvent" );
+        }
+        yield return null;
+
     }
     private void TestFunc() { }
     private void OnTriggerExit(Collider other)
@@ -195,8 +224,8 @@ public class ManFighterScript : MonoBehaviour
         FighterScript getFighterName = FindManName();
             Debug.Log( "exited" );
         // check
-                SetFighterState( FighterState.final );
-                SetTargetState( TargetState.final );
+               SetFighterState( FighterState.final );
+               SetTargetState( TargetState.final );
             //run new anim state to trigger
     }
 }

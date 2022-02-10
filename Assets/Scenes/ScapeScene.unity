@@ -300,7 +300,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2858590657992640146, guid: ebc4580c7ed532b4cb07171aed640d52, type: 3}
       propertyPath: m_Name
-      value: Man_Fighter
+      value: ManFighterOne
       objectReference: {fileID: 0}
     - target: {fileID: 2858590657992640146, guid: ebc4580c7ed532b4cb07171aed640d52, type: 3}
       propertyPath: m_IsActive
@@ -2701,7 +2701,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7465294887362724044, guid: 5358fd1db56fd5f4ebd3a9185f223155, type: 3}
       propertyPath: m_Name
-      value: ManCovered
+      value: ManTarget
       objectReference: {fileID: 0}
     - target: {fileID: 7841293106933389942, guid: 5358fd1db56fd5f4ebd3a9185f223155, type: 3}
       propertyPath: m_RootOrder
@@ -3484,7 +3484,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6413348323692585710, guid: 7ee9a881584999e498cd568894ff4b39, type: 3}
       propertyPath: m_Name
-      value: ManFighter2
+      value: ManFighter
       objectReference: {fileID: 0}
     - target: {fileID: 6413348323692585710, guid: 7ee9a881584999e498cd568894ff4b39, type: 3}
       propertyPath: m_IsActive
@@ -4450,6 +4450,8 @@ MonoBehaviour:
   manAnim: {fileID: 1306717146}
   addPointsFighter: {fileID: 11400000, guid: c2bed492ad347854eafcda8ffcb7d977, type: 2}
   signal: {fileID: 11400000, guid: a43beeef2ee01024c980e8120d3139a1, type: 2}
+  currentFighterState: 0
+  currentTargetState: 0
 --- !u!95 &1306717146 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 336422152012472878, guid: 7ee9a881584999e498cd568894ff4b39, type: 3}
@@ -7537,6 +7539,8 @@ MonoBehaviour:
   manAnim: {fileID: 1870688425}
   addPointsFighter: {fileID: 11400000, guid: 8d15a62f366064540b4ebe1ffba2827d, type: 2}
   signal: {fileID: 11400000, guid: 58f16e2913879494283af2e39dc8159a, type: 2}
+  currentFighterState: 0
+  currentTargetState: 0
 --- !u!95 &1870688425 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 4193399212240928780, guid: 5358fd1db56fd5f4ebd3a9185f223155, type: 3}
