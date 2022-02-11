@@ -967,6 +967,24 @@ public partial class @XRDeviceSimulatorControls : IInputActionCollection2, IDisp
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""YoYoUp"",
+                    ""type"": ""Button"",
+                    ""id"": ""f5503388-7805-4748-af7a-908e832973d4"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""YoYoDown"",
+                    ""type"": ""Button"",
+                    ""id"": ""4671d6bd-9a55-4b02-90ca-c77be5a5d99c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1101,6 +1119,28 @@ public partial class @XRDeviceSimulatorControls : IInputActionCollection2, IDisp
                     ""action"": ""DownMove"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""27a40eb8-ffba-4738-a0c4-a5f57b273675"",
+                    ""path"": ""<Keyboard>/p"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""YoYoUp"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1b918eb2-2969-4a9c-b036-4e2897fb698d"",
+                    ""path"": ""<Keyboard>/v"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""YoYoDown"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1151,6 +1191,8 @@ public partial class @XRDeviceSimulatorControls : IInputActionCollection2, IDisp
         m_Assistant_RightMove = m_Assistant.FindAction("RightMove", throwIfNotFound: true);
         m_Assistant_UpMove = m_Assistant.FindAction("UpMove", throwIfNotFound: true);
         m_Assistant_DownMove = m_Assistant.FindAction("DownMove", throwIfNotFound: true);
+        m_Assistant_YoYoUp = m_Assistant.FindAction("YoYoUp", throwIfNotFound: true);
+        m_Assistant_YoYoDown = m_Assistant.FindAction("YoYoDown", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1536,6 +1578,8 @@ public partial class @XRDeviceSimulatorControls : IInputActionCollection2, IDisp
     private readonly InputAction m_Assistant_RightMove;
     private readonly InputAction m_Assistant_UpMove;
     private readonly InputAction m_Assistant_DownMove;
+    private readonly InputAction m_Assistant_YoYoUp;
+    private readonly InputAction m_Assistant_YoYoDown;
     public struct AssistantActions
     {
         private @XRDeviceSimulatorControls m_Wrapper;
@@ -1544,6 +1588,8 @@ public partial class @XRDeviceSimulatorControls : IInputActionCollection2, IDisp
         public InputAction @RightMove => m_Wrapper.m_Assistant_RightMove;
         public InputAction @UpMove => m_Wrapper.m_Assistant_UpMove;
         public InputAction @DownMove => m_Wrapper.m_Assistant_DownMove;
+        public InputAction @YoYoUp => m_Wrapper.m_Assistant_YoYoUp;
+        public InputAction @YoYoDown => m_Wrapper.m_Assistant_YoYoDown;
         public InputActionMap Get() { return m_Wrapper.m_Assistant; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1565,6 +1611,12 @@ public partial class @XRDeviceSimulatorControls : IInputActionCollection2, IDisp
                 @DownMove.started -= m_Wrapper.m_AssistantActionsCallbackInterface.OnDownMove;
                 @DownMove.performed -= m_Wrapper.m_AssistantActionsCallbackInterface.OnDownMove;
                 @DownMove.canceled -= m_Wrapper.m_AssistantActionsCallbackInterface.OnDownMove;
+                @YoYoUp.started -= m_Wrapper.m_AssistantActionsCallbackInterface.OnYoYoUp;
+                @YoYoUp.performed -= m_Wrapper.m_AssistantActionsCallbackInterface.OnYoYoUp;
+                @YoYoUp.canceled -= m_Wrapper.m_AssistantActionsCallbackInterface.OnYoYoUp;
+                @YoYoDown.started -= m_Wrapper.m_AssistantActionsCallbackInterface.OnYoYoDown;
+                @YoYoDown.performed -= m_Wrapper.m_AssistantActionsCallbackInterface.OnYoYoDown;
+                @YoYoDown.canceled -= m_Wrapper.m_AssistantActionsCallbackInterface.OnYoYoDown;
             }
             m_Wrapper.m_AssistantActionsCallbackInterface = instance;
             if (instance != null)
@@ -1581,6 +1633,12 @@ public partial class @XRDeviceSimulatorControls : IInputActionCollection2, IDisp
                 @DownMove.started += instance.OnDownMove;
                 @DownMove.performed += instance.OnDownMove;
                 @DownMove.canceled += instance.OnDownMove;
+                @YoYoUp.started += instance.OnYoYoUp;
+                @YoYoUp.performed += instance.OnYoYoUp;
+                @YoYoUp.canceled += instance.OnYoYoUp;
+                @YoYoDown.started += instance.OnYoYoDown;
+                @YoYoDown.performed += instance.OnYoYoDown;
+                @YoYoDown.canceled += instance.OnYoYoDown;
             }
         }
     }
@@ -1631,5 +1689,7 @@ public partial class @XRDeviceSimulatorControls : IInputActionCollection2, IDisp
         void OnRightMove(InputAction.CallbackContext context);
         void OnUpMove(InputAction.CallbackContext context);
         void OnDownMove(InputAction.CallbackContext context);
+        void OnYoYoUp(InputAction.CallbackContext context);
+        void OnYoYoDown(InputAction.CallbackContext context);
     }
 }

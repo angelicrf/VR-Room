@@ -945,6 +945,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "YoYoUp",
+                    "type": "Button",
+                    "id": "f5503388-7805-4748-af7a-908e832973d4",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "YoYoDown",
+                    "type": "Button",
+                    "id": "4671d6bd-9a55-4b02-90ca-c77be5a5d99c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1077,6 +1095,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "DownMove",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "27a40eb8-ffba-4738-a0c4-a5f57b273675",
+                    "path": "<Keyboard>/p",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "YoYoUp",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1b918eb2-2969-4a9c-b036-4e2897fb698d",
+                    "path": "<Keyboard>/v",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "YoYoDown",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
