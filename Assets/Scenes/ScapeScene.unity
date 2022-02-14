@@ -8838,11 +8838,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ad0184d45498ed4099f1135d7a737e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lightSource: {fileID: 1746612150}
-  allKeywords:
-  - yoyo
-  - turn on the light
-  - turn off the light
+  thisLight: {fileID: 1746612150}
+  thisDoor: {fileID: 0}
+  thisRoom: {fileID: 0}
 --- !u!4 &1998101314 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: eeadb852347da4b4386bf85763d80980, type: 3}

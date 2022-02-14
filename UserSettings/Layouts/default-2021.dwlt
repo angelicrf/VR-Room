@@ -320,21 +320,21 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Samples/XR Interaction Toolkit/1.0.0-pre.3/XR Device Simulator
+    - Assets/Scripts
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Samples/XR Interaction Toolkit/1.0.0-pre.3/XR Device Simulator
+  - Assets/Scripts
   m_LastFoldersGridSize: 64
   m_LastProjectPath: C:\Users\angel\Documents\ISIT490\Create-with-VR_2020LTS\VR-Room
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 2e6f0000
-    m_LastClickedID: 28462
+    m_SelectedIDs: 0e6d0000
+    m_LastClickedID: 27918
     m_ExpandedIDs: 00000000f26c0000f46c0000f66c0000f86c0000fa6c0000fc6c0000fe6c0000006d0000026d0000046d0000066d0000086d00000a6d00000c6d00000e6d0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -363,7 +363,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 28630000
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000f26c0000f46c0000f66c0000f86c0000fa6c0000fc6c0000fe6c0000006d0000026d0000046d0000066d0000086d00000a6d00000c6d00000e6d0000106d0000
+    m_ExpandedIDs: 00000000f26c0000f46c0000f66c0000f86c0000fa6c0000fc6c0000fe6c0000006d0000026d0000046d0000066d0000086d00000a6d00000c6d00000e6d0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -388,8 +388,8 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 56620000
-    m_LastClickedInstanceID: 25174
+    m_SelectedInstanceIDs: 501e0000
+    m_LastClickedInstanceID: 7760
     m_HadKeyboardFocusLastEvent: 0
     m_ExpandedInstanceIDs: c62300008e6300000000000088810000ce270000502900003abaffff8a6f00005a730000b46f0000
     m_RenameOverlay:
