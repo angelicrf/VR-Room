@@ -12,7 +12,7 @@ public class ProjectAlexaScript : MonoBehaviour
     public Light thisLight;
     public Animator thisDoor;
     public GameObject thisRoom;
-    private string[] allKeywords = new string[] { "yoyo" , "lamp" , "door", "turn", "cut", "move", "go", "back","come","enter", "exit","close","open" };
+    private string[] allKeywords = new string[] { "yoyo" , "lamp" , "door", "turn","on","off", "light", "cut", "move", "go", "back","come","enter", "exit","close","open" };
     private KeywordRecognizer keywordRecognizer;
     private bool isListening = false;
     private Coroutine receiveMsg;
@@ -78,10 +78,10 @@ public class ProjectAlexaScript : MonoBehaviour
     }
     private bool WordsPriority()
     {
-        if (duplicates.Contains( "lamp" ))
+        if (duplicates.Contains( "lamp" ) || duplicates.Contains( "light" ))
         {
-            isLight = duplicates.Contains( "turn" ) ? isLight = true :
-                      duplicates.Contains( "cut" ) ? isLight = false :
+            isLight = duplicates.Contains( "turn" ) || duplicates.Contains( "on" ) ? isLight = true :
+                      duplicates.Contains( "cut" ) || duplicates.Contains( "off" ) ? isLight = false :
                       isLight = false;
             return isLight;
         }
@@ -166,16 +166,22 @@ public class ProjectAlexaScript : MonoBehaviour
     private void TurnOnLight()
     {
         Debug.Log( "turnOn" );
-        // StopCoroutine( receiveMsg );      
-        thisLight.intensity = 4.0f;
-        isListening = false;
+        if (thisLight)
+        {
+            // StopCoroutine( receiveMsg );      
+            thisLight.intensity = 4.0f;
+            isListening = false;
+        }
     }
     private void TurnOffLight()
     {
         Debug.Log( "turnOff" );
-        // StopCoroutine( receiveMsg );
-        thisLight.intensity = 0f;
-        isListening = false;
+        if (thisLight)
+        {
+            // StopCoroutine( receiveMsg );
+            thisLight.intensity = 0f;
+            isListening = false;
+        }
     }
     private void OpenDoor()
     {
@@ -185,8 +191,9 @@ public class ProjectAlexaScript : MonoBehaviour
         if (thisDoor)
         {
             thisDoor.SetBool( "isOpen" , true );
+            isListening = false;
         }
-        isListening = false;
+
     }
     private void CloseDoor()
     {
@@ -196,30 +203,39 @@ public class ProjectAlexaScript : MonoBehaviour
         if (thisDoor)
         {
             thisDoor.SetBool( "isOpen" , false );
+            // add more if needed
+            isListening = false;
         }
-        // add more if needed
-        isListening = false;
+     
     }
     private void EnterRoom()
     {
-        Debug.Log( "enter room" );
-        // StopCoroutine( receiveMsg );
-        // teleport or change the scene
-        //isRoom.
-        isListening = false;
+        if (isRoom)
+        {
+            Debug.Log( "enter room" );
+            // StopCoroutine( receiveMsg );
+            // teleport or change the scene
+            //isRoom.
+            isListening = false;
+        }
     }
     private void ExitRoom()
     {
         Debug.Log( "exit room" );
-        // StopCoroutine( receiveMsg );
-        // teleport back or change the scene
-        //isRoom
-        isListening = false;
+        if (thisRoom)
+        {
+            // StopCoroutine( receiveMsg );
+            // teleport back or change the scene
+            //isRoom
+            isListening = false;
+        }
+     
     }
     IEnumerator ListeningCo()
     {
         isListening = true;
         yield return new WaitForSeconds( 9.0f );
         isListening = false;
+        
     }
 }
