@@ -14,11 +14,13 @@ public class AddPointsFighterManScript : ScriptableObject
     {
         countPoints += 10;
         Debug.Log( "points added " + fighterPoints[0]);
+        fighterPoints[0] = countPoints;
     }
     public void LoosePoint()
     {
         countPoints -= 10;
-        Debug.Log( "points added " + fighterPoints[0] );
+        Debug.Log( "points reduced " + fighterPoints[0] );
+        fighterPoints[0] = countPoints;
     }
     private void OnEnable()
     {

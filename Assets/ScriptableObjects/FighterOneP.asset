@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29d477b77eb713743b6c82f242994ee7, type: 3}
   m_Name: FighterOneP
   m_EditorClassIdentifier: 
-  fighterPoints: 0a000000
+  fighterPoints: 46000000
   countPoints: 70
