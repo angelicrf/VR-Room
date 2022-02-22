@@ -14,6 +14,8 @@ public class ManFighterScript : MonoBehaviour
     private List<FighterScript> allFighters;
     private ClipEndEventScript clipEndEventScript;
     private bool isReduced = false;
+    private bool isIncreaded = false;
+
     [SerializeField] private FighterState currentFighterState;
     [SerializeField] private TargetState currentTargetState;
     [SerializeField] private SoundEffectScript soundEffectScript;
@@ -184,21 +186,26 @@ public class ManFighterScript : MonoBehaviour
         {
             if (soundEffectScript.thisAudio)
             {
-                soundEffectScript.isOn = true;
                 yield return new WaitForSeconds( 2.0f );
-                soundEffectScript.HitSoundEffect();
-                yield return new WaitForSeconds( 2.0f );
-            }
-        }
+                if (!isIncreaded)
+                {
+                    isIncreaded = true;
+                    soundEffectScript.isOn = true;
+                    yield return new WaitForSeconds( 2.0f );
 
-        addPointsFighter.AddPoints();
-        if (addPointsFighter.countPoints >= 20)
-        {
-            //defender display msg audio
-            //change anim defender or display canvas with a msg
-            //update fighter score
-            getFighterName.FighterScore = addPointsFighter.countPoints;
-            SetFighterState( FighterState.stageTwo );
+                    soundEffectScript.HitSoundEffect();
+                    addPointsFighter.AddPoints();
+                    if (addPointsFighter.countPoints >= 20)
+                    {
+                        //defender display msg audio
+                        //change anim defender or display canvas with a msg
+                        //update fighter score
+                        getFighterName.FighterScore = addPointsFighter.countPoints;
+                        SetFighterState( FighterState.stageTwo );
+                      
+                    }               
+                }
+            }
         }
     }
     private IEnumerator TargetStageOne()
@@ -208,24 +215,27 @@ public class ManFighterScript : MonoBehaviour
         {
             if (soundEffectScript.thisAudio)
             {
-                soundEffectScript.isOn = true;
-                yield return new WaitForSeconds( 2.0f );
-                soundEffectScript.HitSoundEffect();
-
                 int thisCurP = addPointsFighter.countPoints;
+                yield return new WaitForSeconds( 2.0f );
                 if (!isReduced)
                 {
+                    isReduced = true;
+                    soundEffectScript.isOn = true;
+                    yield return new WaitForSeconds( 2.0f );
+                    soundEffectScript.HitSoundEffect();
                     addPointsFighter.LoosePoint();
+                  
                     getTargetName.FighterScore = addPointsFighter.fighterPoints[0];
                     int getDiff = DifferenceTargetPoints( thisCurP , getTargetName.FighterScore );
                     if (addPointsFighter.fighterPoints[0] >= 10 && getDiff == 10)
                     {
-                        Debug.Log( "targetatageOne is done" );
+                        Debug.Log( "targetsatageOne is done" );
 
                         SetTargetState( TargetState.stageTwo );
                         StopCoroutine( TargetStageOne() );
+                      
                     }
-                    isReduced = true;
+                    
                 }
             }
         }
@@ -239,14 +249,15 @@ public class ManFighterScript : MonoBehaviour
             {
                 if (soundEffectScript.thisAudio)
                 {
-                    soundEffectScript.isOn = true;
+                    //soundEffectScript.isOn = true;
+                    //yield return new WaitForSeconds( 2.0f );
+                    //soundEffectScript.HitSoundEffect();
+
+                    manAnim.SetBool( "isCover" , true );
                     yield return new WaitForSeconds( 2.0f );
-                    soundEffectScript.HitSoundEffect();
-                    yield return new WaitForSeconds( 2.0f );
+                    clipEndEventScript.GetClipTime( "CompleteTargetEvent" );
                 }
             }
-            manAnim.SetBool( "isCover" , true );
-            clipEndEventScript.GetClipTime( "CompleteTargetEvent" );
         }
       yield return null;
         
@@ -259,43 +270,59 @@ public class ManFighterScript : MonoBehaviour
             {
                 if (soundEffectScript.thisAudio)
                 {
-                    soundEffectScript.isOn = true;
+                    //soundEffectScript.isOn = true;
+                    //yield return new WaitForSeconds( 2.0f );
+                    //soundEffectScript.HitSoundEffect();
+
+                    manAnim.SetBool( "isBack" , true );
                     yield return new WaitForSeconds( 2.0f );
-                    soundEffectScript.HitSoundEffect();
-                    yield return new WaitForSeconds( 2.0f );
+                    clipEndEventScript.GetClipTime( "CompleteFighterEvent" );
                 }
-            }
-            manAnim.SetBool( "isBack" , true );
-           // yield return new WaitForSeconds( 2.0f );
-            clipEndEventScript.GetClipTime( "CompleteFighterEvent" );
+            } 
         }
         yield return null;
 
     }
     private IEnumerator FighterLastStage()
     {
-        signal.hasSignal = false;
-        yield return new WaitForSeconds( 1.0f );
-
-        if (!signal.hasSignal && clipEndEventScript.isFighterChanged)
+        if (soundEffectScript)
         {
-            Debug.Log( "calledisFighterChanged" );
+            if (soundEffectScript.thisAudio)
+            {
+                signal.hasSignal = false;
+                yield return new WaitForSeconds( 1.0f );
 
-            clipEndEventScript.UnLoopFighter( manAnim );
-            //SetFighterState( FighterState.last );
+                if (!signal.hasSignal && clipEndEventScript.isFighterChanged)
+                {
+                    Debug.Log( "calledisFighterChanged" );
+
+                    clipEndEventScript.UnLoopFighter( manAnim );
+                    yield return new WaitForSeconds( 3.0f );
+                    soundEffectScript.FinishAudio();
+                    SetFighterState( FighterState.empty );                 
+                }
+            }
         }
         
     }
     private IEnumerator TargetLastStage()
     {
-        signal.hasSignal = false;
-        yield return new WaitForSeconds( 1.0f );
-
-        if (!signal.hasSignal && clipEndEventScript.isTargetChanged)
+        if (soundEffectScript)
         {
-            Debug.Log( "calledisTargetChanged" );
-            clipEndEventScript.UnLoopTarget( manAnim );
-            //SetTargetState( TargetState.last );
+            if (soundEffectScript.thisAudio)
+            {
+                signal.hasSignal = false;
+                yield return new WaitForSeconds( 1.0f );
+
+                if (!signal.hasSignal && clipEndEventScript.isTargetChanged)
+                {
+                    Debug.Log( "calledisTargetChanged" );
+                    clipEndEventScript.UnLoopTarget( manAnim );
+                    yield return new WaitForSeconds( 3.0f );
+                    soundEffectScript.FinishAudio();
+                    SetTargetState( TargetState.empty );              
+                }
+            }
         }
     }
     private void TestFunc() { }

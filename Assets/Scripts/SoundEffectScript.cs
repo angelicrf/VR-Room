@@ -21,6 +21,7 @@ public class SoundEffectScript : MonoBehaviour
             }
             if (isOff && !isOn)
             {
+                Debug.Log( "audio Stoped" );
                 thisAudio.Stop();
                 isOff = false;
             }
@@ -31,10 +32,16 @@ public class SoundEffectScript : MonoBehaviour
 
         }
     }
+    public void FinishAudio()
+    {
+        isOn = false;
+        isOff = false;
+        thisAudio.Stop();
+    }
     IEnumerator WaitForSound(float _duration)
     {
         yield return new WaitForSeconds( _duration );
-        print( "FinishAudio" );
+        print( "audio going to stop" );
         //onFinishSound.Invoke();
         isOn = false;
         isOff = true;
