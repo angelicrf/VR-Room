@@ -1143,6 +1143,78 @@ public partial class @XRDeviceSimulatorControls : IInputActionCollection2, IDisp
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Cart"",
+            ""id"": ""b7e52f37-39f5-462f-a9e3-1152eccbb212"",
+            ""actions"": [
+                {
+                    ""name"": ""MCart"",
+                    ""type"": ""Value"",
+                    ""id"": ""1cfc79c9-f959-4a39-924b-9e40b6c78c6f"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""2DM"",
+                    ""id"": ""5633c25f-5066-4e14-a36f-3198feab5624"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MCart"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""4f20ca20-6e25-45db-8179-e0ef00f014ad"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MCart"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""1dd33ca9-1bea-40ab-b157-96ed3fb27be7"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MCart"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""6323d1b0-1d83-4191-9abb-02229729a282"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MCart"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""ba8a9a1f-f879-4fe9-abaa-dbb350111af5"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MCart"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -1193,6 +1265,9 @@ public partial class @XRDeviceSimulatorControls : IInputActionCollection2, IDisp
         m_Assistant_DownMove = m_Assistant.FindAction("DownMove", throwIfNotFound: true);
         m_Assistant_YoYoUp = m_Assistant.FindAction("YoYoUp", throwIfNotFound: true);
         m_Assistant_YoYoDown = m_Assistant.FindAction("YoYoDown", throwIfNotFound: true);
+        // Cart
+        m_Cart = asset.FindActionMap("Cart", throwIfNotFound: true);
+        m_Cart_MCart = m_Cart.FindAction("MCart", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1643,6 +1718,39 @@ public partial class @XRDeviceSimulatorControls : IInputActionCollection2, IDisp
         }
     }
     public AssistantActions @Assistant => new AssistantActions(this);
+
+    // Cart
+    private readonly InputActionMap m_Cart;
+    private ICartActions m_CartActionsCallbackInterface;
+    private readonly InputAction m_Cart_MCart;
+    public struct CartActions
+    {
+        private @XRDeviceSimulatorControls m_Wrapper;
+        public CartActions(@XRDeviceSimulatorControls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @MCart => m_Wrapper.m_Cart_MCart;
+        public InputActionMap Get() { return m_Wrapper.m_Cart; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(CartActions set) { return set.Get(); }
+        public void SetCallbacks(ICartActions instance)
+        {
+            if (m_Wrapper.m_CartActionsCallbackInterface != null)
+            {
+                @MCart.started -= m_Wrapper.m_CartActionsCallbackInterface.OnMCart;
+                @MCart.performed -= m_Wrapper.m_CartActionsCallbackInterface.OnMCart;
+                @MCart.canceled -= m_Wrapper.m_CartActionsCallbackInterface.OnMCart;
+            }
+            m_Wrapper.m_CartActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @MCart.started += instance.OnMCart;
+                @MCart.performed += instance.OnMCart;
+                @MCart.canceled += instance.OnMCart;
+            }
+        }
+    }
+    public CartActions @Cart => new CartActions(this);
     public interface IMainActions
     {
         void OnKeyboardXTranslate(InputAction.CallbackContext context);
@@ -1691,5 +1799,9 @@ public partial class @XRDeviceSimulatorControls : IInputActionCollection2, IDisp
         void OnDownMove(InputAction.CallbackContext context);
         void OnYoYoUp(InputAction.CallbackContext context);
         void OnYoYoDown(InputAction.CallbackContext context);
+    }
+    public interface ICartActions
+    {
+        void OnMCart(InputAction.CallbackContext context);
     }
 }

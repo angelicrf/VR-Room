@@ -1121,6 +1121,78 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Cart",
+            "id": "b7e52f37-39f5-462f-a9e3-1152eccbb212",
+            "actions": [
+                {
+                    "name": "MCart",
+                    "type": "Value",
+                    "id": "1cfc79c9-f959-4a39-924b-9e40b6c78c6f",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "2DM",
+                    "id": "5633c25f-5066-4e14-a36f-3198feab5624",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MCart",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "4f20ca20-6e25-45db-8179-e0ef00f014ad",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MCart",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "1dd33ca9-1bea-40ab-b157-96ed3fb27be7",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MCart",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "6323d1b0-1d83-4191-9abb-02229729a282",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MCart",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "ba8a9a1f-f879-4fe9-abaa-dbb350111af5",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MCart",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                }
+            ]
         }
     ],
     "controlSchemes": []
