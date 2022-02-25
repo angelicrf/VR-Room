@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [System.Serializable]
 public class AxleInfo
@@ -12,78 +13,103 @@ public class AxleInfo
 }
 public class MoveObjectScript : MonoBehaviour
 {
-    [SerializeField] private XRDeviceSimulatorControls xrDeviceSimulatorControls;
-    [SerializeField] private GameObject xrDeviceSimulator;
     //public float moveSpeed = 1f;
     //public float rotationSpeed = 1f;
     //private bool isOnGround = false;
-    //
     public List<AxleInfo> axleInfos;
     public float maxMotorTorque;
     public float maxSteeringAngle;
     private float motor;
     private float steering;
+    private Vector2 is2dValue;
 
-    void Awake()
+    public void FixedUpdate()
     {
-        if (xrDeviceSimulator != null && xrDeviceSimulator.activeSelf)
-        {
-            xrDeviceSimulatorControls = new XRDeviceSimulatorControls();
-        }
+        // MoveWheels();
+        InputSystem.onActionChange +=
+            (obj , change) =>
+            {
+                switch (change)
+                {
+                    case InputActionChange.ActionStarted:
+                        if (( ( InputAction )obj ).name == "MCart")
+                        {
+                            Debug.Log( $"action is started  { ( ( InputAction )obj ).ReadValue<Vector2>()} {change}" );
+                        }
+                        break;
+
+                    case InputActionChange.ActionPerformed:
+                        if (( ( InputAction )obj ).name == "MCart")
+                        {
+                            Debug.Log( $"action is performed  { ( ( InputAction )obj ).ReadValue<Vector2>()} {change}" );
+                            MoveWheels( ( ( InputAction )obj ).ReadValue<Vector2>() );
+                        }
+                        break;
+                    case InputActionChange.ActionCanceled:
+                        if (( ( InputAction )obj ).name == "MCart")
+                        {
+                            Debug.Log( $"{( ( InputAction )obj ).ReadValue<Vector2>()} {change}" );
+                        }
+                        break;
+                }
+            };
+
     }
-        private void ApplyLocalPositionToVisuals(WheelCollider collider)
+
+    private void ApplyLocalPositionToVisuals(WheelCollider collider)
     {
         if (collider.transform.childCount == 0)
         {
             return;
         }
- 
+
         Transform visualWheel = collider.transform.GetChild( 0 );
         Vector3 position;
         Quaternion rotation;
 
         collider.GetWorldPose( out position , out rotation );
+        Debug.Log( "positionWheel " + position );
 
         visualWheel.transform.position = position;
         //collider.transform.parent.position;
         //TransformPoint( position );
+        Debug.Log( "positionRotation " + rotation );
+
         visualWheel.transform.rotation = rotation;
         //collider.transform.parent.rotation * rotation;
     }
-    private void OnDestroy()
+    private void FindInputValueOculusDevice()
     {
-        if (xrDeviceSimulator != null && xrDeviceSimulator.activeSelf)
+        var inputDevices = new List<UnityEngine.XR.InputDevice>();
+        UnityEngine.XR.InputDevices.GetDevices( inputDevices );
+        foreach (var device in inputDevices)
         {
-            xrDeviceSimulatorControls.Assistant.Disable();
-        }
-    }
-    private void OnEnable()
-    {
-        if (xrDeviceSimulator != null && xrDeviceSimulator.activeSelf)
-        {
-            xrDeviceSimulatorControls.Assistant.Enable();
-        }
-    }
+            Debug.Log( "devices '{0}'" );
 
-    public void FixedUpdate()
-    {
-        MoveWheels();
+            if (device.TryGetFeatureValue( UnityEngine.XR.CommonUsages.primary2DAxis , out is2dValue ))
+            {
+                Debug.Log( "2dValue  is pressed" + is2dValue );
+            }
+        }
     }
-    private void MoveWheels()
+    private void MoveWheels(Vector2 dirValue)
     {
-        float verticalValue = xrDeviceSimulatorControls.Cart.MCart.ReadValue<float>();
-        float horizantalValue = xrDeviceSimulatorControls.Assistant.LeftMove.ReadValue<float>();
-        if (verticalValue == 1)
-        {
-            motor = maxMotorTorque * verticalValue;
-        }
-        if (horizantalValue == 1)
-        {
-            steering = maxSteeringAngle * horizantalValue;
-        }
+        // position += dirValue * moveSpeed * Time.deltaTime;
+        float dirValueX = dirValue.x;
+        float dirValueY = dirValue.y; 
 
-        if (horizantalValue != 0 || verticalValue != 0)
+        if (dirValueX == 1.00 || dirValueX == -1.00 || dirValueY == 1.00 || dirValueY == -1.00)
         {
+            if (dirValueX == 1.00 || dirValueX == -1.00)
+            {
+                steering = maxSteeringAngle * dirValueX;
+                Debug.Log( "insideHorizantal" + steering );
+            }
+            if (dirValueY == 1.00 || dirValueY == -1.00)
+            {
+                motor = maxMotorTorque * dirValueY;
+                Debug.Log( "insideVertical"  + motor);
+            }
             foreach (AxleInfo axleInfo in axleInfos)
             {
                 if (axleInfo.steering)
