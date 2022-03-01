@@ -8,8 +8,8 @@ public class AxleInfo
 {
     public WheelCollider backWheel;
     public WheelCollider frontWheel;
-    public GameObject actualFrontWheels;
-    public GameObject actualBackWheels;
+    public Transform actualFrontWheels;
+    public Transform actualBackWheels;
     public bool motor = true;
     public bool steering = true;
 
@@ -38,8 +38,7 @@ public class MoveObjectScript : MonoBehaviour
             {
                 switch (change)
                 {
-                    case InputActionChange.ActionStarted:
-                       
+                    case InputActionChange.ActionStarted:         
                         if (( ( InputAction )obj ).name == "MCart")
                         {
                             Debug.Log( $"action is performed  { ( ( InputAction )obj ).ReadValue<Vector2>()} {change}" );
@@ -47,11 +46,9 @@ public class MoveObjectScript : MonoBehaviour
                             break;
                         }
                         break;
-
                     case InputActionChange.ActionPerformed:         
                     case InputActionChange.ActionCanceled:
-                        break;
- 
+                       break; 
                 }
             };
     }
@@ -62,15 +59,10 @@ public class MoveObjectScript : MonoBehaviour
         float originalBWRZ = axInfo.actualBackWheels.transform.localEulerAngles.z;
         float originalFWRX = axInfo.actualFrontWheels.transform.localEulerAngles.x;
         float originalFWRZ = axInfo.actualFrontWheels.transform.localEulerAngles.z;
-        //Vector3 position2;
-        //Quaternion rotation2;
+
         transform.localEulerAngles = new Vector3( transform.localEulerAngles.x , axInfo.backWheel.steerAngle - transform.localEulerAngles.z , transform.localEulerAngles.z );
         axInfo.actualBackWheels.transform.rotation = Quaternion.Euler( originalBWRX , axInfo.backWheel.steerAngle , originalBWRZ );
         axInfo.actualFrontWheels.transform.rotation = Quaternion.Euler( originalFWRX , axInfo.frontWheel.steerAngle , originalFWRZ );
-        transform.localPosition = new Vector3( axInfo.backWheel.motorTorque , transform.localPosition.y , transform.localPosition.z );
-        //axInfo.frontWheel.GetWorldPose( out position2 , out rotation2 );
-        //axInfo.actualFrontWheels.transform.position = position2;
-        //axInfo.actualFrontWheels.transform.rotation = rotation2;
     }
     private void FindInputValueOculusDevice()
     {
@@ -78,8 +70,6 @@ public class MoveObjectScript : MonoBehaviour
         UnityEngine.XR.InputDevices.GetDevices( inputDevices );
         foreach (var device in inputDevices)
         {
-            Debug.Log( "devices '{0}'" );
-
             if (device.TryGetFeatureValue( UnityEngine.XR.CommonUsages.primary2DAxis , out is2dValue ))
             {
                 Debug.Log( "2dValue  is pressed" + is2dValue );
@@ -94,42 +84,35 @@ public class MoveObjectScript : MonoBehaviour
       
         if (dirValueX == 1.00 || dirValueX == -1.00 || dirValueY == 1.00 || dirValueY == -1.00)
         {
-            if (dirValueX == 1.00 || dirValueX == -1.00)
+                //A & D
+           steering = maxSteeringAngle * dirValueX;
+           motor = maxMotorTorque * dirValueY;
+
+            if (axleInfos.steering)
             {
-                steering = maxSteeringAngle * dirValueX;
-                
-                    if (axleInfos.steering)
-                    {
-                    axleInfos.backWheel.steerAngle = steering;
-                    axleInfos.frontWheel.steerAngle = steering;
-                    }
-                    ApplyLocalPositionToVisuals( axleInfos );
+            axleInfos.backWheel.steerAngle = steering;
+            axleInfos.frontWheel.steerAngle = steering;
             }
-            if (dirValueY == 1.00 || dirValueY == -1.00)
+            ApplyLocalPositionToVisuals( axleInfos);
+        //S & W        
+            if (axleInfos.motor)
             {
-                motor = maxMotorTorque * dirValueY;
-                    if (axleInfos.motor)
-                    {
-                        axleInfos.backWheel.motorTorque = motor;
-                        axleInfos.frontWheel.motorTorque = motor;
-                    }
-                    ApplyLocalPositionToVisuals( axleInfos );
-                }
+                axleInfos.backWheel.motorTorque = motor;
+            }
+            ApplyLocalPositionToVisuals( axleInfos);           
         }
     }
     private void FindWeels()
     {
         axleInfos = new AxleInfo();
-        GameObject searchChild;
-        GameObject originalCart = GameObject.Find( "cart4w" );
-
-        for (int i = 0; i < originalCart.transform.childCount; i++)
+        Transform searchChild;
+        for (int i = 0; i < transform.childCount; i++)
         {
-             searchChild = originalCart.transform.GetChild( i ).gameObject;
+             searchChild = transform.GetChild( i );
              if(searchChild.name == "Wheels")
             { 
-                axleInfos.actualFrontWheels = searchChild.transform.Find( "frontWheels" ).gameObject;
-                axleInfos.actualBackWheels = searchChild.transform.Find( "backWheels" ).gameObject;  
+                axleInfos.actualFrontWheels = searchChild.transform.Find( "frontWheels" );
+                axleInfos.actualBackWheels = searchChild.transform.Find( "backWheels" );  
             }
             if (searchChild.name == "Colliders")
             {      
