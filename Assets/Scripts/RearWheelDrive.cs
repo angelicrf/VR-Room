@@ -52,11 +52,11 @@ public class RearWheelDrive : MonoBehaviour
                 FR.wheelcollider.steerAngle = dirValueX * steer;
                 BL.wheelcollider.steerAngle = dirValueX * steer;
                 BR.wheelcollider.steerAngle = dirValueX * steer;
-
+                //after each turn [A or D] for a better speed it is best to push W [forward] or S[backward]
                 BL.wheelcollider.motorTorque = dirValueY * motor;
                 BR.wheelcollider.motorTorque = dirValueY * motor;
-                FL.wheelcollider.motorTorque = dirValueY * motor;
-                FR.wheelcollider.motorTorque = dirValueY * motor;
+                FL.wheelcollider.motorTorque = Mathf.Abs(dirValueX * motor);
+                FR.wheelcollider.motorTorque = dirValueX * motor;
                 if (!isChanged)
                 {
                     UpdateVisualWheels( FL , FL.visualwheel );
