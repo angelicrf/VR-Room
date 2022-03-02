@@ -1156,6 +1156,15 @@ public partial class @XRDeviceSimulatorControls : IInputActionCollection2, IDisp
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""MBrake"",
+                    ""type"": ""Button"",
+                    ""id"": ""a608bd74-ea43-4684-a5c8-3c1e30c08163"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1213,6 +1222,17 @@ public partial class @XRDeviceSimulatorControls : IInputActionCollection2, IDisp
                     ""action"": ""MCart"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""881320f1-6b66-4eff-b167-425f3371a8d3"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MBrake"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1268,6 +1288,7 @@ public partial class @XRDeviceSimulatorControls : IInputActionCollection2, IDisp
         // Cart
         m_Cart = asset.FindActionMap("Cart", throwIfNotFound: true);
         m_Cart_MCart = m_Cart.FindAction("MCart", throwIfNotFound: true);
+        m_Cart_MBrake = m_Cart.FindAction("MBrake", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1723,11 +1744,13 @@ public partial class @XRDeviceSimulatorControls : IInputActionCollection2, IDisp
     private readonly InputActionMap m_Cart;
     private ICartActions m_CartActionsCallbackInterface;
     private readonly InputAction m_Cart_MCart;
+    private readonly InputAction m_Cart_MBrake;
     public struct CartActions
     {
         private @XRDeviceSimulatorControls m_Wrapper;
         public CartActions(@XRDeviceSimulatorControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @MCart => m_Wrapper.m_Cart_MCart;
+        public InputAction @MBrake => m_Wrapper.m_Cart_MBrake;
         public InputActionMap Get() { return m_Wrapper.m_Cart; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1740,6 +1763,9 @@ public partial class @XRDeviceSimulatorControls : IInputActionCollection2, IDisp
                 @MCart.started -= m_Wrapper.m_CartActionsCallbackInterface.OnMCart;
                 @MCart.performed -= m_Wrapper.m_CartActionsCallbackInterface.OnMCart;
                 @MCart.canceled -= m_Wrapper.m_CartActionsCallbackInterface.OnMCart;
+                @MBrake.started -= m_Wrapper.m_CartActionsCallbackInterface.OnMBrake;
+                @MBrake.performed -= m_Wrapper.m_CartActionsCallbackInterface.OnMBrake;
+                @MBrake.canceled -= m_Wrapper.m_CartActionsCallbackInterface.OnMBrake;
             }
             m_Wrapper.m_CartActionsCallbackInterface = instance;
             if (instance != null)
@@ -1747,6 +1773,9 @@ public partial class @XRDeviceSimulatorControls : IInputActionCollection2, IDisp
                 @MCart.started += instance.OnMCart;
                 @MCart.performed += instance.OnMCart;
                 @MCart.canceled += instance.OnMCart;
+                @MBrake.started += instance.OnMBrake;
+                @MBrake.performed += instance.OnMBrake;
+                @MBrake.canceled += instance.OnMBrake;
             }
         }
     }
@@ -1803,5 +1832,6 @@ public partial class @XRDeviceSimulatorControls : IInputActionCollection2, IDisp
     public interface ICartActions
     {
         void OnMCart(InputAction.CallbackContext context);
+        void OnMBrake(InputAction.CallbackContext context);
     }
 }

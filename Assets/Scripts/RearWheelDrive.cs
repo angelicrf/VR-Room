@@ -12,31 +12,55 @@ public class RearWheelDrive : MonoBehaviour
 
     public float motor;
     public float steer;
-    public float brake = 0;
+    private float brake { get; set; }
     public WheelInfo FL;
     public WheelInfo FR;
     public WheelInfo BL;
     public WheelInfo BR;
     public float speed;
     private bool isChanged = false;
-
     void Awake()
     {
         GetTheWheels();
     }
     void FixedUpdate()
     {
+     FindInputAction();
+    }
+    private void FindInputAction()
+    {      
         InputSystem.onActionChange +=
         (obj , change) =>
         {
-            if(change == InputActionChange.ActionStarted){
-                if (( ( InputAction )obj ).name == "MCart")
+            //A/S - to to turn or W/D to move [keyboard]
+            if (change == InputActionChange.ActionStarted)
+            {
+                if (( ( InputAction )obj ).name == "MCart" && ( ( InputAction )obj ).name != "MBrake")
                 {
-                    Debug.Log( $"action is performed  { ( ( InputAction )obj ).ReadValue<Vector2>()} {change}" );
-                    MoveWheels( ( ( InputAction )obj ).ReadValue<Vector2>());
+                    Debug.Log( $"MCart action is performed  { ( ( InputAction )obj ).ReadValue<Vector2>()} {change} brake is {brake}" );
+                    if (brake != 0)
+                    {
+                        brake = 0;
+                        TakeBrake();
+                    }
+                    MoveWheels( ( ( InputAction )obj ).ReadValue<Vector2>() );                 
+                }
+                // Space[keyboard] to stop
+                else if (( ( InputAction )obj ).name == "MBrake" && ( ( InputAction )obj ).name != "MCart")
+                {
+                    Debug.Log( $"MBrake action is performed  { ( ( InputAction )obj ).ReadValue<float>()} {change} brake is {brake}" );
+                    brake = 440f;
+                    TakeBrake();           
                 }
             }
-        };  
+        };
+    }
+    private void TakeBrake()
+    {
+        FL.wheelcollider.brakeTorque = brake;
+        FR.wheelcollider.brakeTorque = brake;
+        BL.wheelcollider.brakeTorque = brake;
+        BR.wheelcollider.brakeTorque = brake;
     }
     private void MoveWheels(Vector2 dirValue)
     {
@@ -57,18 +81,13 @@ public class RearWheelDrive : MonoBehaviour
                 BR.wheelcollider.motorTorque = dirValueY * motor;
                 FL.wheelcollider.motorTorque = Mathf.Abs(dirValueX * motor);
                 FR.wheelcollider.motorTorque = dirValueX * motor;
-                if (!isChanged)
-                {
-                    UpdateVisualWheels( FL , FL.visualwheel );
-                    UpdateVisualWheels( BL , BL.visualwheel );
-                    UpdateVisualWheels( FR , FR.visualwheel );
-                    UpdateVisualWheels( BR , BR.visualwheel );
-                   // isChanged = true;
-                }
-               // yield return new WaitUntil( () => isChanged );
-               // ChangeCartPos( dirValueX , dirValueY );
-            }
-         
+                UpdateVisualWheels( FL , FL.visualwheel );
+                UpdateVisualWheels( BL , BL.visualwheel );
+                UpdateVisualWheels( FR , FR.visualwheel );
+                UpdateVisualWheels( BR , BR.visualwheel );
+                // yield return new WaitUntil( () => isChanged );
+                // ChangeCartPos( dirValueX , dirValueY );
+            }        
         }
     }
     private void UpdateVisualWheels(WheelInfo whI,Transform tr)
@@ -89,21 +108,18 @@ public class RearWheelDrive : MonoBehaviour
             //Camera.main.transform
             if (dirX == 1)
             {
-                //S
-                Debug.Log( "back" );          
+                //S      
                 transform.Translate( Vector3.right * Time.deltaTime * speed );
                 isChanged = false;
             }
             if(dirX == -1)
             {
                 //A        
-                Debug.Log( "left" );
                 transform.Translate( Vector3.left * Time.deltaTime * speed );
                 isChanged = false;
             }
             if (dirY == 1)
             {            
-                Debug.Log( "forward" );
                 //W
                 transform.Translate( Vector3.forward * Time.deltaTime * speed );
                 isChanged = false;
@@ -112,7 +128,6 @@ public class RearWheelDrive : MonoBehaviour
             if (dirY == -1)
             {
                 //D
-                Debug.Log( "right" );
                 transform.Translate( Vector3.back * Time.deltaTime * speed );
                 isChanged = false;
             }

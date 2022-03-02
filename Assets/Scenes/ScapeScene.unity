@@ -10023,7 +10023,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   motor: 800
   steer: 50
-  brake: 0
+  brake: 450
   FL:
     visualwheel: {fileID: 543450652879027031}
     wheelcollider: {fileID: 3241193595355412630}

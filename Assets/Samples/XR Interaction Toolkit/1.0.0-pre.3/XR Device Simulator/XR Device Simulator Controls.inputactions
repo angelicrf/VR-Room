@@ -1134,6 +1134,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "MBrake",
+                    "type": "Button",
+                    "id": "a608bd74-ea43-4684-a5c8-3c1e30c08163",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1191,6 +1200,17 @@
                     "action": "MCart",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "881320f1-6b66-4eff-b167-425f3371a8d3",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MBrake",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
