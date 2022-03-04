@@ -6,9 +6,9 @@ using UnityEngine.XR.Interaction.Toolkit;
 public class ZoombieChangeAnimationScript : MonoBehaviour
 {
 
-    [SerializeField] private GameObject zoombieMan;
+    [SerializeField] private GameObject zombieMan;
     [SerializeField] private GameObject camPos;
-    [SerializeField] private Animator zoombieAnim;
+    [SerializeField] private Animator zombieAnim;
     [SerializeField] private GameObject thisObj;
 
     private XRDeviceSimulatorControls xrdeviceSimulatorControl;
@@ -16,6 +16,7 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     private ClipEndEventScript clipEndEventScript;
     private GameObject blockBox;
     private GameObject zombieFight;
+    private GameObject zombieTarget;
 
     private XRInteractorLineVisual m_ValidColorGradient;
     private void Awake()
@@ -26,6 +27,7 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
         m_ValidColorGradient = thisObj.GetComponent<XRInteractorLineVisual>();
         blockBox = GameObject.Find( "/AllBuildingBlocks/BlockBox" );
         zombieFight = GameObject.Find( "/AllZombies/ZombieFit" );
+        zombieTarget = GameObject.Find( "/AllZombies/ZombieTarget" );
     }
     void FixedUpdate()
     {       
@@ -35,14 +37,13 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     private void DrawLineThreeD(LineRenderer m_LineRenderer)
     {
         var rf = m_LineRenderer.colorGradient;
-        Debug.Log( "rf" + rf );
     }
     private void OnDrawGizmosSelected()
     {
         // Draws a 5 unit long yellow line in front of the object
         Gizmos.color = Color.yellow;
-        Vector3 direction = zoombieMan.transform.TransformDirection( Vector3.forward ) * 5;
-        Gizmos.DrawRay( zoombieMan.transform.position , direction );
+        Vector3 direction = zombieMan.transform.TransformDirection( Vector3.forward ) * 5;
+        Gizmos.DrawRay( zombieMan.transform.position , direction );
     }
     private void OnEnable()
     {
@@ -55,11 +56,9 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     private void CreateNewRay()
     {
         Vector3 direction = new Vector3(4,0,5);
-        Debug.DrawRay( zoombieMan.transform.position , direction * 1f , Color.yellow );
-        Ray newRay = new Ray( zoombieMan.transform.position , direction );
+        Debug.DrawRay( zombieMan.transform.position , direction * 1f , Color.yellow );
+        Ray newRay = new Ray( zombieMan.transform.position , direction );
         bool result = Physics.Raycast( newRay , out RaycastHit rayhit , 1f );
-        Debug.Log( "result " + result );
-
         if (result)
         {
             Debug.Log( "Fired and hit a wall" );
@@ -67,11 +66,9 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     }
     private void ChangeAnime()
     {
-        Debug.Log( "changeAnimCalled" );
-
         float valueController = xrdeviceSimulatorControl.InputControls.Grip.ReadValue<float>();
 
-        if (zoombieMan.gameObject.CompareTag( "ZoobmieMan" ))
+        if (zombieMan.gameObject.CompareTag( "ZombieMan" ))
             if (valueController != 0)
             {
                 StartCoroutine( SetAnimCo() );
@@ -83,33 +80,41 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     }
     IEnumerator SetAnimCo()
     {
-        Debug.Log( "rayCast zoombie" );
         yield return new WaitForSeconds( 0.2f );
-        zoombieAnim.SetBool( "isFall" , true );
+        zombieAnim.SetBool( "isFall" , true );
     }
     IEnumerator SetAnimBackCo()
     {
-        zoombieAnim.SetBool( "isFall" , true );
+        zombieAnim.SetBool( "isFall" , true );
         yield return new WaitForSeconds( 2.0f );
         clipEndEventScript.GetClipTime("RunDieCompleteHandler");
     }
     IEnumerator GetCurrentAnimTime()
     {
-        bool getAnimTime = zoombieAnim.GetCurrentAnimatorStateInfo( 0 ).normalizedTime < 1;
+        bool getAnimTime = zombieAnim.GetCurrentAnimatorStateInfo( 0 ).normalizedTime < 1;
         yield return new WaitUntil( () => getAnimTime );
-        zoombieAnim.SetBool( "isFall" , false );
+        zombieAnim.SetBool( "isFall" , false );
     }
 
-    private void RunDieCompleteHandler(string name)
+    private void RunDieCompleteHandler()
     {
-        Debug.Log( $"{name} animation complete." );
-        zoombieAnim.SetBool( "isFall" , false );
+        zombieAnim.SetBool( "isFall" , false );
     }
-    private void FightCompleteHandler(string name)
+    private void FightRoundOne()
     {
-        Debug.Log( $"{name} animation complete." );
-        zoombieAnim.SetBool( "isFight" , false );
-        zoombieAnim.SetBool( "isFallAfterFight" , false );
+        zombieAnim.SetBool( "isFight" , false );
+        StartCoroutine( FightRoundTwoCo() );
+    }
+    private void FightRoundTwoEnd()
+    {
+        zombieAnim.SetBool( "isFallAfterFight" , false );
+        zombieFight.GetComponent<Animator>().enabled = false;
+        //create a back idle animation and transit into it
+    }
+    IEnumerator FightRoundTwoCo()
+    {
+        zombieAnim.SetBool( "isFallAfterFight" , true );
+        yield return new WaitForSeconds( 1f );
     }
     private void CallAnimBack()
     {
@@ -121,18 +126,37 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     }
     IEnumerator SetAnimFightCo()
     {
-        zoombieAnim.SetBool( "isFight" , true );
-        yield return new WaitForSeconds( 0.6f );
-        zoombieAnim.SetBool( "isFallAfterFight" , true );
-        yield return new WaitForSeconds( 0.3f );
-        clipEndEventScript.GetClipTime("FightCompleteHandler");
+        zombieAnim.SetBool( "isFight" , true );
+        clipEndEventScript.GetClipTime( "FightRoundOne" );
+
+        yield return new WaitForSeconds( 2f );
+     
+        //if (!targetDefended && fightStarted)
+        //{
+        //    StartCoroutine( SetAnimTargetCo() );
+        //    targetDefended = true;
+        //}
+        //yield return new WaitUntil( () => targetDefended );
+        //if (!fightOver)
+        //{
+        //    zombieAnim.SetBool( "isFallAfterFight" , true );
+        //    fightOver = true;
+        //}
+        //yield return new WaitUntil( () => fightOver );
+        //clipEndEventScript.GetClipTime("FightCompleteHandler");
+    }
+    private IEnumerator SetAnimTargetCo()
+    {
+        Debug.Log( "zombieTarget called" );
+
+        yield return new WaitForSeconds( 3.0f );
     }
     private void CheckPosByDistance()
     {
         Vector2 newCamPos = camPos.transform.position;
         Vector2 blockBoxPos = blockBox.transform.position;
         Vector2 zombieFitPos = zombieFight.transform.position;
-        Vector2 zoombiePos = zoombieMan.transform.position;
+        Vector2 zoombiePos = zombieMan.transform.position;
         Vector2 diffZBPos = blockBoxPos - zoombiePos;
         Vector2 diffZFPos = zombieFitPos - zoombiePos;
 
@@ -151,11 +175,11 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log( "trigged from script" + other.name);
         switch (other.name)
         {
-            case "ZombieFit":
+            case "ZombieTarget":
                StartCoroutine( SetAnimFightCo() );
+                //start target fight first step
                 break;
             case "BlockBox":
                 StartCoroutine( SetAnimBackCo() );
@@ -163,6 +187,18 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
             default:
                 break;
         }
-
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        switch (other.name)
+        {
+            case "ZombieTarget":
+                Debug.Log( "exited the trriger" );
+                clipEndEventScript.GetClipTime( "FightRoundTwoEnd" ); 
+                //target back to idle
+                break;
+            default:
+                break;
+        }
     }
 }

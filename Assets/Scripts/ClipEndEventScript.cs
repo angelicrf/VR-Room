@@ -10,8 +10,10 @@ public class ClipEndEventScript: MonoBehaviour
 
     [System.ComponentModel.DefaultValue( false )]
     public bool isFighterChanged { get; set; }
+    public string animClipName { get; set; }
     public void GetClipTime(string eventFunc)
     {
+        Debug.Log( "getclipTime called" );
         for (int i = 0; i < thisAnim.runtimeAnimatorController.animationClips.Length; i++)
         {
             AnimationClip clip = thisAnim.runtimeAnimatorController.animationClips[i];
@@ -19,7 +21,7 @@ public class ClipEndEventScript: MonoBehaviour
             animationEndEvent.time = clip.length;
             animationEndEvent.functionName = eventFunc;
             animationEndEvent.stringParameter = clip.name;
-
+            animClipName = clip.name;
             clip.AddEvent( animationEndEvent );
         }
     }
