@@ -17,6 +17,8 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     private GameObject blockBox;
     private GameObject zombieFight;
     private GameObject zombieTarget;
+    private bool thisTargetStarted = false;
+    private bool thisAnimClipEnded = false;
 
     private XRInteractorLineVisual m_ValidColorGradient;
     private void Awake()
@@ -30,7 +32,10 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
         zombieTarget = GameObject.Find( "/AllZombies/ZombieTarget" );
     }
     void FixedUpdate()
-    {       
+    {
+        thisTargetStarted = clipEndEventScript.targetStarted;
+        thisAnimClipEnded = clipEndEventScript.animClipEnded;
+
         m_ValidColorGradient.validColorGradient.SetKeys( new[] { new GradientColorKey( Color.magenta , 0f ) , new GradientColorKey( Color.magenta , 1f ) } , new[] { new GradientAlphaKey( 1f , 0f ) , new GradientAlphaKey( 1f , 1f ) } );
         m_LineRenderer.colorGradient = m_ValidColorGradient.validColorGradient;
     }
@@ -80,14 +85,20 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     }
     IEnumerator SetAnimCo()
     {
-        yield return new WaitForSeconds( 0.2f );
-        zombieAnim.SetBool( "isFall" , true );
+        if (zombieFight.GetComponent<Animator>().GetParameter( 0 ).name == "isFall")
+        {
+            yield return new WaitForSeconds( 0.2f );
+            zombieFight.GetComponent<Animator>().SetBool( "isFall" , true );
+        }
     }
     IEnumerator SetAnimBackCo()
     {
-        zombieAnim.SetBool( "isFall" , true );
-        yield return new WaitForSeconds( 2.0f );
-        clipEndEventScript.GetClipTime("RunDieCompleteHandler");
+        if (zombieFight.GetComponent<Animator>().GetParameter( 0 ).name == "isFall")
+        {
+            zombieFight.GetComponent<Animator>().SetBool( "isFall" , true );
+            yield return new WaitForSeconds( 2.0f );
+            clipEndEventScript.GetClipTime( "RunDieCompleteHandler" );
+        }
     }
     IEnumerator GetCurrentAnimTime()
     {
@@ -98,23 +109,35 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
 
     private void RunDieCompleteHandler()
     {
-        zombieAnim.SetBool( "isFall" , false );
+        if (zombieFight.GetComponent<Animator>().GetParameter( 0 ).name == "isFall")
+        {
+            zombieFight.GetComponent<Animator>().SetBool( "isFall" , false );
+        }
     }
     private void FightRoundOne()
     {
-        zombieAnim.SetBool( "isFight" , false );
-        StartCoroutine( FightRoundTwoCo() );
+        if (zombieFight.GetComponent<Animator>().GetParameter( 0 ).name == "isFight")
+        {
+            zombieFight.GetComponent<Animator>().SetBool( "isFight" , false );
+            StartCoroutine( FightRoundTwoCo() );
+        }
     }
     private void FightRoundTwoEnd()
     {
-        zombieAnim.SetBool( "isFallAfterFight" , false );
-        zombieFight.GetComponent<Animator>().enabled = false;
+        if (zombieFight.GetComponent<Animator>().GetParameter( 2 ).name == "isFallAfterFight") {
+            zombieFight.GetComponent<Animator>().SetBool( "isFallAfterFight" , false );
+            zombieFight.GetComponent<Animator>().enabled = false;
+           // clipEndEventScript.animClipEnded = true;
+        }
         //create a back idle animation and transit into it
     }
     IEnumerator FightRoundTwoCo()
     {
-        zombieAnim.SetBool( "isFallAfterFight" , true );
-        yield return new WaitForSeconds( 1f );
+        if (zombieFight.GetComponent<Animator>().GetParameter( 2 ).name == "isFallAfterFight")
+        {
+            zombieFight.GetComponent<Animator>().SetBool( "isFallAfterFight" , true );
+            yield return new WaitForSeconds( 1f );
+        }
     }
     private void CallAnimBack()
     {
@@ -126,11 +149,16 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     }
     IEnumerator SetAnimFightCo()
     {
-        zombieAnim.SetBool( "isFight" , true );
-        clipEndEventScript.GetClipTime( "FightRoundOne" );
+        if(zombieFight.GetComponent<Animator>().GetParameter( 0 ).name == "isFight"){
+            zombieFight.GetComponent<Animator>().SetBool( "isFight" , true );
+            clipEndEventScript.GetClipTime( "FightRoundOne" );
 
-        yield return new WaitForSeconds( 2f );
-     
+            yield return new WaitForSeconds( 2f );
+            if (thisTargetStarted)
+            {
+                TargetStartAnim();
+            }
+        }
         //if (!targetDefended && fightStarted)
         //{
         //    StartCoroutine( SetAnimTargetCo() );
@@ -145,11 +173,15 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
         //yield return new WaitUntil( () => fightOver );
         //clipEndEventScript.GetClipTime("FightCompleteHandler");
     }
-    private IEnumerator SetAnimTargetCo()
+    private void SetTargetEnd()
     {
-        Debug.Log( "zombieTarget called" );
-
-        yield return new WaitForSeconds( 3.0f );
+        if (zombieAnim)
+        {
+            if (zombieTarget.GetComponent<Animator>().GetParameter( 0 ).name == "isTargetSt")
+            {
+                zombieTarget.GetComponent<Animator>().SetBool( "isTargetSt" , false );            
+            }
+        }
     }
     private void CheckPosByDistance()
     {
@@ -169,9 +201,21 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
             StartCoroutine( SetAnimFightCo() );
         }
     }
-    public void TestChangeAnim()
+    public void TargetStartAnim()
     {
-        Debug.Log( "zoombie selected" );
+        if (zombieAnim)
+        {
+            if (zombieTarget.GetComponent<Animator>().GetParameter(0).name == "isTargetSt")
+            {
+                zombieTarget.GetComponent<Animator>().SetBool( "isTargetSt" , true );
+                clipEndEventScript.GetClipTime( "FightRoundTwoEnd" );
+            }
+        }
+    }
+    IEnumerator TargetTriggerExit()
+    {
+        yield return new WaitUntil( () => thisAnimClipEnded );
+        SetTargetEnd();
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -179,7 +223,6 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
         {
             case "ZombieTarget":
                StartCoroutine( SetAnimFightCo() );
-                //start target fight first step
                 break;
             case "BlockBox":
                 StartCoroutine( SetAnimBackCo() );
@@ -194,8 +237,7 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
         {
             case "ZombieTarget":
                 Debug.Log( "exited the trriger" );
-                clipEndEventScript.GetClipTime( "FightRoundTwoEnd" ); 
-                //target back to idle
+                StartCoroutine( TargetTriggerExit() );               
                 break;
             default:
                 break;

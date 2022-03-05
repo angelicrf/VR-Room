@@ -5412,6 +5412,40 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.1253302, y: 1.9006137, z: 0.7721162}
   m_Center: {x: -0.1714842, y: 1.0345919, z: 0.113942}
+--- !u!114 &1512125465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1512125463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db6bd3702fc932a4a97db7a298447fa6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  zombieMan: {fileID: 1512125463}
+  camPos: {fileID: 2097220473}
+  zombieAnim: {fileID: 1512125467}
+  thisObj: {fileID: 1535750045}
+--- !u!114 &1512125466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1512125463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2b88cc75e022ff40bcee2c90c5dc6e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  thisAnim: {fileID: 1512125467}
+--- !u!95 &1512125467 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: -6057140222963153312, guid: 8f7380da49034cd488ddff94b1ac35d1, type: 3}
+  m_PrefabInstance: {fileID: 1512125461}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1531470600
 GameObject:
   m_ObjectHideFlags: 0

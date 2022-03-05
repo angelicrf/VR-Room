@@ -10,10 +10,11 @@ public class ClipEndEventScript: MonoBehaviour
 
     [System.ComponentModel.DefaultValue( false )]
     public bool isFighterChanged { get; set; }
-    public string animClipName { get; set; }
+    public bool animClipEnded { get; set; } = false;
+    public bool targetStarted { get; set; } = false;
     public void GetClipTime(string eventFunc)
     {
-        Debug.Log( "getclipTime called" );
+        Debug.Log( "getclipTime called " + eventFunc );
         for (int i = 0; i < thisAnim.runtimeAnimatorController.animationClips.Length; i++)
         {
             AnimationClip clip = thisAnim.runtimeAnimatorController.animationClips[i];
@@ -21,8 +22,15 @@ public class ClipEndEventScript: MonoBehaviour
             animationEndEvent.time = clip.length;
             animationEndEvent.functionName = eventFunc;
             animationEndEvent.stringParameter = clip.name;
-            animClipName = clip.name;
             clip.AddEvent( animationEndEvent );
+            if(eventFunc == "FightRoundOne")
+            {
+                targetStarted = true;
+            }
+           else if(eventFunc == "FightRoundTwoEnd")
+            {
+                animClipEnded = true;
+            }
         }
     }
     public void UnLoopTarget(Animator curAnim)
