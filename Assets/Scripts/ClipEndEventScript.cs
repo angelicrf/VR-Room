@@ -12,9 +12,10 @@ public class ClipEndEventScript: MonoBehaviour
     public bool isFighterChanged { get; set; }
     public bool animClipEnded { get; set; } = false;
     public bool targetStarted { get; set; } = false;
+
     public void GetClipTime(string eventFunc)
     {
-        Debug.Log( "getclipTime called " + eventFunc );
+        Debug.Log( "getclipTime called " + thisAnim.runtimeAnimatorController.animationClips.Length );
         for (int i = 0; i < thisAnim.runtimeAnimatorController.animationClips.Length; i++)
         {
             AnimationClip clip = thisAnim.runtimeAnimatorController.animationClips[i];
@@ -23,15 +24,32 @@ public class ClipEndEventScript: MonoBehaviour
             animationEndEvent.functionName = eventFunc;
             animationEndEvent.stringParameter = clip.name;
             clip.AddEvent( animationEndEvent );
-            if(eventFunc == "FightRoundOne")
-            {
-                targetStarted = true;
-            }
-           else if(eventFunc == "FightRoundTwoEnd")
-            {
-                animClipEnded = true;
-            }
+            if (clip.events.Length > 0 &&  i < clip.events.Length)
+            { 
+                if (clip.events[i] != null)
+                {
+                    if (clip.events[i].functionName == "FightRoundOne" && !targetStarted)
+                    {
+                       targetStarted = true;
+                        Debug.Log( "FightRoundOne completed" );
+                    }
+                    else if (clip.events[i].functionName == "FightRoundTwoEnd" && !animClipEnded)
+                    {
+                        animClipEnded = true;
+                        Debug.Log( "FightRoundTwoEnd is completed" );
+                    }
+                }
+            }                    
         }
+    }
+    bool AnimatorIsPlaying()
+    {
+        return thisAnim.GetCurrentAnimatorStateInfo( 0 ).length >
+               thisAnim.GetCurrentAnimatorStateInfo( 0 ).normalizedTime;
+    }
+    public bool AnimatorIsPlaying(string stateName)
+    {
+        return AnimatorIsPlaying() && thisAnim.GetCurrentAnimatorStateInfo( 0 ).IsName( stateName );
     }
     public void UnLoopTarget(Animator curAnim)
     {

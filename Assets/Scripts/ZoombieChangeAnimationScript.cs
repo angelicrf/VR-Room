@@ -1,5 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -17,12 +20,14 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     private GameObject blockBox;
     private GameObject zombieFight;
     private GameObject zombieTarget;
-    private bool thisTargetStarted = false;
-    private bool thisAnimClipEnded = false;
+    private bool thisTargetStarted;
+    private bool thisAnimClipEnded;
 
     private XRInteractorLineVisual m_ValidColorGradient;
     private void Awake()
     {
+        thisTargetStarted = false;
+        thisAnimClipEnded = false;
         xrdeviceSimulatorControl = new XRDeviceSimulatorControls();
         m_LineRenderer = thisObj.GetComponent<LineRenderer>();
         clipEndEventScript = GetComponent<ClipEndEventScript>();
@@ -151,13 +156,11 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     {
         if(zombieFight.GetComponent<Animator>().GetParameter( 0 ).name == "isFight"){
             zombieFight.GetComponent<Animator>().SetBool( "isFight" , true );
-            clipEndEventScript.GetClipTime( "FightRoundOne" );
-
+            TargetStartAnim();
             yield return new WaitForSeconds( 2f );
-            if (thisTargetStarted)
-            {
-                TargetStartAnim();
-            }
+            clipEndEventScript.GetClipTime( "FightRoundOne" );
+            yield return new WaitForSeconds(1.2f);
+            clipEndEventScript.GetClipTime( "FightRoundTwoEnd" );
         }
         //if (!targetDefended && fightStarted)
         //{
@@ -207,8 +210,7 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
         {
             if (zombieTarget.GetComponent<Animator>().GetParameter(0).name == "isTargetSt")
             {
-                zombieTarget.GetComponent<Animator>().SetBool( "isTargetSt" , true );
-                clipEndEventScript.GetClipTime( "FightRoundTwoEnd" );
+                zombieTarget.GetComponent<Animator>().SetBool( "isTargetSt" , true );                   
             }
         }
     }
@@ -222,7 +224,8 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
         switch (other.name)
         {
             case "ZombieTarget":
-               StartCoroutine( SetAnimFightCo() );
+                StartCoroutine( SetAnimFightCo() );
+                //TaskToRunAnim();
                 break;
             case "BlockBox":
                 StartCoroutine( SetAnimBackCo() );
