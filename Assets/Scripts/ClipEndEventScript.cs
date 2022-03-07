@@ -1,18 +1,21 @@
 using System.Collections;
 using UnityEngine;
 
-public class ClipEndEventScript: MonoBehaviour
+public class ClipEndEventScript
 {
-    [SerializeField] private Animator thisAnim;
-
+    public Animator thisAnim = new Animator();
     [System.ComponentModel.DefaultValue( false )]
     public bool isTargetChanged { get; set; }
 
     [System.ComponentModel.DefaultValue( false )]
     public bool isFighterChanged { get; set; }
-    public bool animClipEnded { get; set; } = false;
-    public bool targetStarted { get; set; } = false;
 
+    [System.ComponentModel.DefaultValue( false )]
+    public bool animClipEnded { get; set; }
+
+    [System.ComponentModel.DefaultValue( false )]
+    public bool targetStarted { get; set; }
+    public ClipEndEventScript() { }
     public void GetClipTime(string eventFunc)
     {
         Debug.Log( "getclipTime called " + thisAnim.runtimeAnimatorController.animationClips.Length );
@@ -84,14 +87,14 @@ public class ClipEndEventScript: MonoBehaviour
         //    AnimationUtility.SetAnimationClipSettings( clip , setting );
         //}
     }
-    private void CompleteTargetEvent()
-    {
-        StartCoroutine( TargetCo() );
-    }
-    private void CompleteFighterEvent()
-    {
-        StartCoroutine( FighterCo() );
-    }
+    //private void CompleteTargetEvent()
+    //{
+    //    StartCoroutine( TargetCo() );
+    //}
+    //private void CompleteFighterEvent()
+    //{
+    //    StartCoroutine( FighterCo() );
+    //}
     private IEnumerator TargetCo()
     {
         bool isTarget = GetAnimParameterName( thisAnim, "isCover" );

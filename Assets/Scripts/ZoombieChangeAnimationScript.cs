@@ -16,7 +16,7 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
 
     private XRDeviceSimulatorControls xrdeviceSimulatorControl;
     private LineRenderer m_LineRenderer;
-    private ClipEndEventScript clipEndEventScript;
+    private ClipEndEventScript clipEndEventScript = new ClipEndEventScript();
     private GameObject blockBox;
     private GameObject zombieFight;
     private GameObject zombieTarget;
@@ -24,25 +24,32 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
     private bool thisAnimClipEnded;
 
     private XRInteractorLineVisual m_ValidColorGradient;
+
     private void Awake()
     {
-        thisTargetStarted = false;
-        thisAnimClipEnded = false;
-        xrdeviceSimulatorControl = new XRDeviceSimulatorControls();
-        m_LineRenderer = thisObj.GetComponent<LineRenderer>();
-        clipEndEventScript = GetComponent<ClipEndEventScript>();
-        m_ValidColorGradient = thisObj.GetComponent<XRInteractorLineVisual>();
-        blockBox = GameObject.Find( "/AllBuildingBlocks/BlockBox" );
-        zombieFight = GameObject.Find( "/AllZombies/ZombieFit" );
-        zombieTarget = GameObject.Find( "/AllZombies/ZombieTarget" );
+        if (gameObject.GetComponent<Animator>() && clipEndEventScript != null)
+        {
+            clipEndEventScript.thisAnim = gameObject.GetComponent<Animator>();
+            thisTargetStarted = false;
+            thisAnimClipEnded = false;
+            xrdeviceSimulatorControl = new XRDeviceSimulatorControls();
+            m_LineRenderer = thisObj.GetComponent<LineRenderer>();
+            m_ValidColorGradient = thisObj.GetComponent<XRInteractorLineVisual>();
+            blockBox = GameObject.Find( "/AllBuildingBlocks/BlockBox" );
+            zombieFight = GameObject.Find( "/AllZombies/ZombieFit" );
+            zombieTarget = GameObject.Find( "/AllZombies/ZombieTarget" );
+        }
+
     }
     void FixedUpdate()
     {
-        thisTargetStarted = clipEndEventScript.targetStarted;
-        thisAnimClipEnded = clipEndEventScript.animClipEnded;
-
-        m_ValidColorGradient.validColorGradient.SetKeys( new[] { new GradientColorKey( Color.magenta , 0f ) , new GradientColorKey( Color.magenta , 1f ) } , new[] { new GradientAlphaKey( 1f , 0f ) , new GradientAlphaKey( 1f , 1f ) } );
-        m_LineRenderer.colorGradient = m_ValidColorGradient.validColorGradient;
+        if (clipEndEventScript != null)
+        {
+            thisTargetStarted = clipEndEventScript.targetStarted;
+            thisAnimClipEnded = clipEndEventScript.animClipEnded;
+            m_ValidColorGradient.validColorGradient.SetKeys( new[] { new GradientColorKey( Color.magenta , 0f ) , new GradientColorKey( Color.magenta , 1f ) } , new[] { new GradientAlphaKey( 1f , 0f ) , new GradientAlphaKey( 1f , 1f ) } );
+            m_LineRenderer.colorGradient = m_ValidColorGradient.validColorGradient;
+        }
     }
     private void DrawLineThreeD(LineRenderer m_LineRenderer)
     {
@@ -240,7 +247,7 @@ public class ZoombieChangeAnimationScript : MonoBehaviour
         {
             case "ZombieTarget":
                 Debug.Log( "exited the trriger" );
-                StartCoroutine( TargetTriggerExit() );               
+                StartCoroutine( TargetTriggerExit() );
                 break;
             default:
                 break;

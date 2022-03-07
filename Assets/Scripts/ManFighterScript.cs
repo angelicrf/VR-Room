@@ -39,9 +39,10 @@ public class ManFighterScript : MonoBehaviour
 
     private void Start()
     {
+        clipEndEventScript.thisAnim = gameObject.GetComponent<Animator>();
         fighter = new FighterScript();
         fighterOneName = transform.name;
-        clipEndEventScript = GetComponent<ClipEndEventScript>();
+        clipEndEventScript = new ClipEndEventScript();
         soundEffectScript = GetComponent<SoundEffectScript>();
 
         if (soundEffectScript)
